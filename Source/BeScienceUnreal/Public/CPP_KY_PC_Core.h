@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "CPP_KY_WG_GameMenu.h"
 #include "CPP_KY_PC_Core.generated.h"
 
 /**
