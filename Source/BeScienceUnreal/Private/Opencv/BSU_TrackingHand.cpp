@@ -21,10 +21,16 @@ void ABSU_TrackingHand::BeginPlay()
     width = cvImage.cols;
     height = cvImage.rows;
 
-    net_det = cv::dnn::readNetFromONNX("C:/palm_detection.onnx");
+    FString ProjectPath = FPaths::ProjectDir();
+    net_det = cv::dnn::readNetFromONNX(TCHAR_TO_UTF8(*(ProjectPath + "/NNE/palm_detection.onnx")));
     nextIndex = 0; //tracking id
 
-    wheelImage = cv::imread("C:/wheel.png", cv::IMREAD_UNCHANGED);
+
+    // UAsset 이미지를 읽음
+    // 프로젝트 폴더 위치
+    wheelImage = cv::imread(TCHAR_TO_UTF8(*(ProjectPath + "/NNE/wheel.png")), cv::IMREAD_UNCHANGED);
+    //wheelImage = cv::imread("C:/wheel.png", cv::IMREAD_UNCHANGED);
+    
     cv::resize(wheelImage, wheelImage, cv::Size(240, 240));
 
     handRoiRect = cv::Rect(120, 240, 520, 240);
@@ -65,7 +71,7 @@ void ABSU_TrackingHand::BeginPlay()
     vector_rotation = (cv::Mat_<double>(3, 1) << 0, 0, 0);
     vector_translation = (cv::Mat_<double>(3, 1) << 0, 0, 0);
 
-    model = BSU_YuNet("c:/yunet.onnx", head_image_size, 0.6, 0.3, 3000, backend_id, target_id);
+    model = BSU_YuNet(TCHAR_TO_UTF8(*(ProjectPath + "/NNE/yunet.onnx")), head_image_size, 0.6, 0.3, 3000, backend_id, target_id);
 
     //손 변수
     is_handle = false;
