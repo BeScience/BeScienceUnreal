@@ -15,5 +15,6 @@ class BESCIENCEUNREAL_API UBSU_VehicleWheelRear : public UChaosVehicleWheel
 	GENERATED_BODY()
 
 public:
+
 	UBSU_VehicleWheelRear();
 };

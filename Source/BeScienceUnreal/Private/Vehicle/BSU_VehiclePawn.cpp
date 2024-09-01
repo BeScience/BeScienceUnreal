@@ -171,6 +171,8 @@ void ABSU_VehiclePawn::Tick(float Delta)
 	CameraYaw = FMath::FInterpTo(CameraYaw, 0.0f, Delta, 1.0f);
 
 	BackSpringArm->SetRelativeRotation(FRotator(0.0f, CameraYaw, 0.0f));
+
+	ChaosVehicleMovement->SetThrottleInput(0.1f);
 }
 
 void ABSU_VehiclePawn::Steering(const FInputActionValue& Value)
@@ -180,6 +182,11 @@ void ABSU_VehiclePawn::Steering(const FInputActionValue& Value)
 
 	// add the input
 	ChaosVehicleMovement->SetSteeringInput(SteeringValue);
+}
+
+void ABSU_VehiclePawn::CvSteering(const float Value)
+{
+	ChaosVehicleMovement->SetSteeringInput(Value);
 }
 
 void ABSU_VehiclePawn::Throttle(const FInputActionValue& Value)

@@ -90,6 +90,9 @@ protected:
 	/** Handles steering input */
 	void Steering(const FInputActionValue& Value);
 
+	UFUNCTION(BlueprintCallable, Category="Vehicle")
+	void CvSteering(const float Value);
+
 	/** Handles throttle input */
 	void Throttle(const FInputActionValue& Value);
 
