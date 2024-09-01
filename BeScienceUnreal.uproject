@@ -28,6 +28,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "HttpBlueprint",
+			"Enabled": true
+		},
+		{
 			"Name": "OpenCV",
 			"Enabled": true
 		},
