@@ -26,6 +26,10 @@
 		{
 			"Name": "ChaosVehiclesPlugin",
 			"Enabled": true
+		},
+		{
+			"Name": "HttpBlueprint",
+			"Enabled": true
 		}
 	]
 }
