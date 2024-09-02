@@ -5,6 +5,7 @@
 #include "CPP_KY_WG_TicketFront.h"
 #include "Components/WidgetComponent.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/Character.h"
 // Sets default values
 ACPP_KY_Ticket::ACPP_KY_Ticket()
 {
@@ -52,7 +53,6 @@ ACPP_KY_Ticket::ACPP_KY_Ticket()
 void ACPP_KY_Ticket::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -60,5 +60,20 @@ void ACPP_KY_Ticket::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+AActor* ACPP_KY_Ticket::GetTicketUser()
+{
+	return this->TicketUser;
+}
+
+void ACPP_KY_Ticket::SetTicketUser ( AActor* user)
+{
+	this->TicketUser = user;
+}
+
+void ACPP_KY_Ticket::TicketDestory()
+{
+	this->Destroy();
 }
 
