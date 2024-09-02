@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
+#include "GameFramework/PlayerController.h"
 
 ABSU_VehiclePawn::ABSU_VehiclePawn()
 {
@@ -75,8 +76,8 @@ ABSU_VehiclePawn::ABSU_VehiclePawn()
 
 	// Set up the engine
 	// NOTE: Check the Blueprint asset for the Torque Curve
-	GetChaosVehicleMovement()->EngineSetup.MaxTorque = 750.0f;
-	GetChaosVehicleMovement()->EngineSetup.MaxRPM = 7000.0f;
+	GetChaosVehicleMovement()->EngineSetup.MaxTorque = 500.0f;
+	GetChaosVehicleMovement()->EngineSetup.MaxRPM = 5000.0f;
 	GetChaosVehicleMovement()->EngineSetup.EngineIdleRPM = 900.0f;
 	GetChaosVehicleMovement()->EngineSetup.EngineBrakeEffect = 0.2f;
 	GetChaosVehicleMovement()->EngineSetup.EngineRevUpMOI = 5.0f;
@@ -86,8 +87,8 @@ ABSU_VehiclePawn::ABSU_VehiclePawn()
 	GetChaosVehicleMovement()->TransmissionSetup.bUseAutomaticGears = true;
 	GetChaosVehicleMovement()->TransmissionSetup.bUseAutoReverse = true;
 	GetChaosVehicleMovement()->TransmissionSetup.FinalRatio = 2.81f;
-	GetChaosVehicleMovement()->TransmissionSetup.ChangeUpRPM = 6000.0f;
-	GetChaosVehicleMovement()->TransmissionSetup.ChangeDownRPM = 2000.0f;
+	GetChaosVehicleMovement()->TransmissionSetup.ChangeUpRPM = 4000.0f;
+	GetChaosVehicleMovement()->TransmissionSetup.ChangeDownRPM = 1500.0f;
 	GetChaosVehicleMovement()->TransmissionSetup.GearChangeTime = 0.2f;
 	GetChaosVehicleMovement()->TransmissionSetup.TransmissionEfficiency = 0.9f;
 
@@ -171,8 +172,13 @@ void ABSU_VehiclePawn::Tick(float Delta)
 	CameraYaw = FMath::FInterpTo(CameraYaw, 0.0f, Delta, 1.0f);
 
 	BackSpringArm->SetRelativeRotation(FRotator(0.0f, CameraYaw, 0.0f));
+	APlayerController* LocalPlayerController = GetWorld()->GetFirstPlayerController();
 
-	ChaosVehicleMovement->SetThrottleInput(0.1f);
+	if (LocalPlayerController != nullptr)
+	{
+		if (LocalPlayerController->GetPawn() == this)
+			ChaosVehicleMovement->SetThrottleInput(0.3f);
+	}
 }
 
 void ABSU_VehiclePawn::Steering(const FInputActionValue& Value)
