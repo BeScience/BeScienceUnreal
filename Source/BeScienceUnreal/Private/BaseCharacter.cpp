@@ -115,3 +115,11 @@ void ABaseCharacter::OnMyActionJump ( const FInputActionValue& inputValue )
 
 }
 
+void ABaseCharacter::CameraMoveMent()
+{
+}
+
+void ABaseCharacter::MoveCamera()
+{
+}
+

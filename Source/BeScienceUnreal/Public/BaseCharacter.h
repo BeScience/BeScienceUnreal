@@ -55,7 +55,11 @@ public:
 
 	void OnMyActionJump(const struct FInputActionValue& inputValue);
 
+	UFUNCTION(BlueprintCallable)
+	void CameraMoveMent();
 
+	UFUNCTION(BlueprintCallable)
+	void MoveCamera();
 
 
 
