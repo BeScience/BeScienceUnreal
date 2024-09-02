@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h"
+#include "Vehicle/BSU_VehiclePawn.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -37,26 +38,12 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto* pc = Cast<APlayerController> ( Controller );
-	if (pc)
-	{
-		UEnhancedInputLocalPlayerSubsystem* subSys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem> ( pc->GetLocalPlayer () );
-		if (subSys)
-		{
-			subSys->AddMappingContext ( imc_Base , 0 );
-		}
-	}
-
-	
 }
 
 // Called every frame
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-
-	Super::Tick ( DeltaTime );
 
 	FTransform ttt = FTransform ( GetControlRotation () );
 	Direction = ttt.TransformVector ( Direction );
@@ -74,7 +61,15 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-
+	auto* pc = Cast<APlayerController>(Controller);
+	if (pc)
+	{
+		UEnhancedInputLocalPlayerSubsystem* subSys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
+		if (subSys)
+		{
+			subSys->AddMappingContext(imc_Base, 0);
+		}
+	}
 
 	UEnhancedInputComponent* input = CastChecked<UEnhancedInputComponent> ( PlayerInputComponent );
 
@@ -83,7 +78,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		input->BindAction ( ia_Move , ETriggerEvent::Triggered , this , &ABaseCharacter::OnMyActionMove );
 		input->BindAction ( ia_Look , ETriggerEvent::Triggered , this , &ABaseCharacter::OnMyActionLook );
 		input->BindAction ( ia_Jump , ETriggerEvent::Started , this , &ABaseCharacter::OnMyActionJump );
-
+		input->BindAction(ia_Function, ETriggerEvent::Started, this, &ABaseCharacter::OnMyActionFunction);
 	}
 
 }
@@ -106,13 +101,39 @@ void ABaseCharacter::OnMyActionLook ( const FInputActionValue& inputValue )
 
 	AddControllerPitchInput ( -v.Y );
 	AddControllerYawInput ( v.X );
-
 }
 
 void ABaseCharacter::OnMyActionJump ( const FInputActionValue& inputValue )
 {
 	Jump ();
 
+}
+
+void ABaseCharacter::OnMyActionFunction(const FInputActionValue& inputValue)
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnMyActionFunction"));
+	TArray<AActor*> OverlappingActors;
+	GetOverlappingActors(OverlappingActors, TSubclassOf<AActor>());
+	for (AActor* Actor : OverlappingActors)
+	{
+		ABSU_VehiclePawn* pawn = Cast<ABSU_VehiclePawn>(Actor);
+		if (pawn)
+		{
+			// possess
+			APlayerController* pc = GetWorld()->GetFirstPlayerController();
+			if (pc)
+			{
+				UEnhancedInputLocalPlayerSubsystem* subSys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
+				if (subSys)
+				{
+					subSys->RemoveMappingContext(pawn->IMC_Player);
+				}
+
+				SetActorHiddenInGame(true);
+				pc->Possess(pawn);
+			}
+		}
+	}
 }
 
 void ABaseCharacter::CameraMoveMent()

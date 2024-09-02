@@ -499,8 +499,6 @@ void ABSU_TrackingHand::buttonEvent(cv::Mat frame, std::map<int, TrackedRect> re
 
 void ABSU_TrackingHand::ReadFrame()
 {
-    UE_LOG(LogTemp, Log, TEXT("ReadFrame is called"));
-
     if (!capture.isOpened())
     {
         return;
