@@ -23,10 +23,13 @@ private:
 	class UCPP_KY_WG_TicketFront* WBP_TicketFront;
 	class UUserWidget* WBP_TicketBack;
 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY ( EditDefaultsOnly , BlueprintReadWrite , Category = "User" )
+	AActor* TicketUser;
 
 	UPROPERTY ( EditDefaultsOnly , BlueprintReadWrite , Category = "Widget" )
 	TSubclassOf<class UCPP_KY_WG_TicketFront> WBP_TicketFront_Class;
@@ -34,12 +37,21 @@ public:
 	UPROPERTY ( EditDefaultsOnly , BlueprintReadWrite , Category = "Widget" )
 	TSubclassOf<class UUserWidget> WBP_TicketBack_Class;
 
-	UPROPERTY ( EditDefaultsOnly , BlueprintReadWrite , Category = "Comp" )
+	UPROPERTY ( EditDefaultsOnly , BlueprintReadWrite , Category = "Compnent" )
 	class UWidgetComponent* TicketFrontComp;
-	UPROPERTY ( EditDefaultsOnly , BlueprintReadWrite , Category = "Comp" )
+	UPROPERTY ( EditDefaultsOnly , BlueprintReadWrite , Category = "Compnent" )
 	class UWidgetComponent* TicketBackComp;
 
-	UPROPERTY ( EditDefaultsOnly , BlueprintReadWrite , Category = "Comp" )
+	UPROPERTY ( EditDefaultsOnly , BlueprintReadWrite , Category = "Compnent" )
 	class UBoxComponent* TicketBoxComp;
 
+
+	UFUNCTION ()
+	AActor* GetTicketUser ();
+
+	UFUNCTION ()
+	void SetTicketUser ( AActor* user);
+
+	UFUNCTION()
+	void TicketDestory ();
 };
