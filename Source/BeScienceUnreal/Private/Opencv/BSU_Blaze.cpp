@@ -6,7 +6,8 @@
 
 BSU_Blaze::BSU_Blaze()
 {
-    this->blazePalm = cv::dnn::readNet("c:/blazepalm_old.onnx");
+    FString ProjectPath = FPaths::ProjectDir();
+    this->blazePalm = cv::dnn::readNet(TCHAR_TO_UTF8(*(ProjectPath + "/NNE/blazepalm_old.onnx")));
 }
 
 BSU_Blaze::~BSU_Blaze()
