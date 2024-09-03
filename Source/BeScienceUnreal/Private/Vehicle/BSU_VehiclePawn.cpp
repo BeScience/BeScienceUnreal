@@ -199,7 +199,7 @@ void ABSU_VehiclePawn::Tick(float Delta)
 	if (LocalPlayerController != nullptr)
 	{
 		if (LocalPlayerController->GetPawn() == this)
-			ChaosVehicleMovement->SetThrottleInput(0.3f);
+			ChaosVehicleMovement->SetThrottleInput(0.5f);
 	}
 }
 
@@ -348,6 +348,7 @@ void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
 
 				//possess the player
 				PlayerController->Possess(*ActorIterator);
+				TearDownOpencv();
 
 				break;
 			}

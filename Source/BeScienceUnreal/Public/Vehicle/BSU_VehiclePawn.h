@@ -57,6 +57,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class UInputMappingContext* IMC_Player;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class ABSU_TrackingHand> TrackingHandFactory;
+
 protected:
 	/** Steering Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -138,6 +141,12 @@ protected:
 	void BrakeLights(bool bBraking);
 
 public:
+	
+	UFUNCTION(BlueprintImplementableEvent, Category="Vehicle")
+	void SetupOpencv();
+	UFUNCTION(BlueprintImplementableEvent, Category="Vehicle")
+	void TearDownOpencv();
+
 	/** Returns the front spring arm subobject */
 	FORCEINLINE USpringArmComponent* GetFrontSpringArm() const { return FrontSpringArm; }
 	/** Returns the front camera subobject */
@@ -148,4 +157,5 @@ public:
 	FORCEINLINE UCameraComponent* GetBackCamera() const { return BackCamera; }
 	/** Returns the cast Chaos Vehicle Movement subobject */
 	FORCEINLINE const TObjectPtr<UChaosWheeledVehicleMovementComponent>& GetChaosVehicleMovement() const { return ChaosVehicleMovement; }
+
 };
