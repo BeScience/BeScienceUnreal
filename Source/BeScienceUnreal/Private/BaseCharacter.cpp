@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h"
 #include "Vehicle/BSU_VehiclePawn.h"
+#include "MemoBoard/BSU_MemoBoard.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -135,6 +136,12 @@ void ABaseCharacter::OnMyActionFunction(const FInputActionValue& inputValue)
 				pawn->SetupOpencv();
 			}
 		}
+
+		ABSU_MemoBoard* board = Cast<ABSU_MemoBoard>(Actor);
+		if (board)
+		{
+			// board
+		}
 	}
 }
 
@@ -145,4 +152,3 @@ void ABaseCharacter::CameraMoveMent()
 void ABaseCharacter::MoveCamera()
 {
 }
-
