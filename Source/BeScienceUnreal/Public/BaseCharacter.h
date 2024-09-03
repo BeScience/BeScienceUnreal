@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/InputActionValue.h"
 #include "BaseCharacter.generated.h"
 
 UCLASS()
@@ -41,19 +42,23 @@ public:
 
 		UPROPERTY(EditDefaultsOnly, Category = "ch")
 	class UInputAction* ia_Look;
-
+		
 		UPROPERTY(EditDefaultsOnly, Category = "ch")
 	class UInputAction* ia_Jump;
+
+		UPROPERTY(EditDefaultsOnly, Category = "ch")
+	class UInputAction* ia_Function;
 
 
 	FVector Direction;
 
 
-	void OnMyActionMove(const struct FInputActionValue& inputValue);
+	void OnMyActionMove(const FInputActionValue& inputValue);
 
-	void OnMyActionLook(const struct FInputActionValue& inputValue);
+	void OnMyActionLook(const FInputActionValue& inputValue);
 
-	void OnMyActionJump(const struct FInputActionValue& inputValue);
+	void OnMyActionJump(const FInputActionValue& inputValue);
+	void OnMyActionFunction(const FInputActionValue& inputValue);
 
 	UFUNCTION(BlueprintCallable)
 	void CameraMoveMent();
