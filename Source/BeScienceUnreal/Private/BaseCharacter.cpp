@@ -99,7 +99,7 @@ void ABaseCharacter::OnMyActionLook ( const FInputActionValue& inputValue )
 
 	FVector2D v = inputValue.Get<FVector2D> ();
 
-	AddControllerPitchInput ( -v.Y );
+	AddControllerPitchInput ( v.Y );
 	AddControllerYawInput ( v.X );
 }
 
@@ -130,7 +130,9 @@ void ABaseCharacter::OnMyActionFunction(const FInputActionValue& inputValue)
 				}
 
 				SetActorHiddenInGame(true);
+
 				pc->Possess(pawn);
+				pawn->SetupOpencv();
 			}
 		}
 	}

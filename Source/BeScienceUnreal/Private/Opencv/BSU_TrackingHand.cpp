@@ -82,7 +82,7 @@ std::map<int, ABSU_TrackingHand::TrackedRect> ABSU_TrackingHand::getTrackedRects
             float iou = calculateIOU(filteredDet.rect, trackedRect.second.rect);
 
             // If IOU is above a threshold, update the tracked rectangle
-            if (iou > 0.4)
+            if (iou > 0.3)
             {
                 trackedRect.second.rect = filteredDet.rect;
                 foundMatch = true;
@@ -244,7 +244,7 @@ void ABSU_TrackingHand::wheelCheck(cv::Mat frame, bool& wheelLeftChecked, bool& 
 
         float leftOverlapRatio = static_cast<float>(intersectionPixelsLeft) / (circleRadius * circleRadius * CV_PI);
 
-        if (leftOverlapRatio > 0.8)
+        if (leftOverlapRatio > 0.4)
         {
             cv::circle(frame, wheelStartPoint + rotatedLeftPoint, 30, cv::Scalar(255, 0, 0), -1);
             wheelLeftChecked = true;
@@ -259,7 +259,7 @@ void ABSU_TrackingHand::wheelCheck(cv::Mat frame, bool& wheelLeftChecked, bool& 
         int intersectionPixelsRight = cv::countNonZero(intersectionImageRight);
         float rightOverlapRatio = static_cast<float>(intersectionPixelsRight) / (circleRadius * circleRadius * CV_PI);
 
-        if (rightOverlapRatio > 0.8)
+        if (rightOverlapRatio > 0.4)
         {
             cv::circle(frame, wheelStartPoint + rotatedRightPoint, 30, cv::Scalar(0, 255, 0), -1);
             wheelRightChecked = true;
@@ -288,6 +288,32 @@ float ABSU_TrackingHand::getWheelAngle(std::map<int, TrackedRect> resRects)
     float dx = center2.x - center1.x;
     float dy = center2.y - center1.y;
     float angle = (-1) * atan2(dy, dx) * 180.0f / CV_PI;
+
+    return angle;
+}
+
+float ABSU_TrackingHand::getWheelAngleWithCenter(std::map<int, TrackedRect> resRects)
+{
+    TrackedRect leftRect = resRects.begin()->second;
+    TrackedRect rightRect = resRects.begin()->second;
+
+    for (auto& trackedRect : resRects)
+    {
+        if (trackedRect.second.rect.x < leftRect.rect.x)
+            leftRect = trackedRect.second;
+
+        if (trackedRect.second.rect.x > rightRect.rect.x)
+            rightRect = trackedRect.second;
+    }
+
+    // 두 개의 직사각형 중심점 계산
+    cv::Point2f center1(leftRect.rect.x + leftRect.rect.width / 2.0f, leftRect.rect.y + leftRect.rect.height / 2.0f);
+    cv::Point2f center2(wheelStartPos.x + 120, wheelStartPos.y + 120);
+    // 두 중심점을 연결하는 선의 기울기 계산
+    float dx = center2.x - center1.x;
+    float dy = center2.y - center1.y;
+    float angle = (-1) * atan2(dy, dx) * 180.0f / CV_PI;
+
 
     return angle;
 }
@@ -571,6 +597,17 @@ void ABSU_TrackingHand::Inference()
         {
             is_handle = true;
             wheelAngle = getWheelAngle(resRects);
+        }
+        else if (wheelLeftChecked == true && wheelRightChecked == false)
+        {
+            is_handle = true;
+            wheelAngle = getWheelAngleWithCenter(resRects);
+
+        }
+        else if (wheelLeftChecked == false && wheelRightChecked == true)
+        {
+            is_handle = true;
+
         }
         else
         {
