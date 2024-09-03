@@ -152,14 +152,3 @@ void ABaseCharacter::CameraMoveMent()
 void ABaseCharacter::MoveCamera()
 {
 }
-
-void ABaseCharacter::ViewBoard_Implementation()
-{
-
-}
-
-bool ABaseCharacter::ViewBoard_Validate()
-{
-	return true;
-}
-
