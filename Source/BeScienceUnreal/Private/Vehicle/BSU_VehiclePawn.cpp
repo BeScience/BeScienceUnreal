@@ -11,6 +11,11 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
+#include "GameFramework/PlayerController.h"
+#include "Components/BoxComponent.h"
+#include "Components/ArrowComponent.h"
+#include "BaseCharacter.h"
+#include "Runtime/Engine/public/EngineUtils.h"
 
 ABSU_VehiclePawn::ABSU_VehiclePawn()
 {
@@ -38,6 +43,15 @@ ABSU_VehiclePawn::ABSU_VehiclePawn()
 	BackSpringArm->bEnableCameraRotationLag = true;
 	BackSpringArm->CameraRotationLagSpeed = 2.0f;
 	BackSpringArm->CameraLagMaxDistance = 50.0f;
+
+	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
+	BoxComp->SetupAttachment(GetMesh());
+	BoxComp->SetBoxExtent(FVector(300.0f, 200.0f, 100.0f));
+
+	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComp"));
+	ArrowComp->SetupAttachment(GetMesh());
+	// (X=40.000000,Y=-170.000000,Z=60.000000)
+	ArrowComp->SetRelativeLocation(FVector(40.0f, -200.0f, 60.0f));
 
 	BackCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Back Camera"));
 	BackCamera->SetupAttachment(BackSpringArm);
@@ -75,8 +89,8 @@ ABSU_VehiclePawn::ABSU_VehiclePawn()
 
 	// Set up the engine
 	// NOTE: Check the Blueprint asset for the Torque Curve
-	GetChaosVehicleMovement()->EngineSetup.MaxTorque = 750.0f;
-	GetChaosVehicleMovement()->EngineSetup.MaxRPM = 7000.0f;
+	GetChaosVehicleMovement()->EngineSetup.MaxTorque = 500.0f;
+	GetChaosVehicleMovement()->EngineSetup.MaxRPM = 5000.0f;
 	GetChaosVehicleMovement()->EngineSetup.EngineIdleRPM = 900.0f;
 	GetChaosVehicleMovement()->EngineSetup.EngineBrakeEffect = 0.2f;
 	GetChaosVehicleMovement()->EngineSetup.EngineRevUpMOI = 5.0f;
@@ -86,8 +100,8 @@ ABSU_VehiclePawn::ABSU_VehiclePawn()
 	GetChaosVehicleMovement()->TransmissionSetup.bUseAutomaticGears = true;
 	GetChaosVehicleMovement()->TransmissionSetup.bUseAutoReverse = true;
 	GetChaosVehicleMovement()->TransmissionSetup.FinalRatio = 2.81f;
-	GetChaosVehicleMovement()->TransmissionSetup.ChangeUpRPM = 6000.0f;
-	GetChaosVehicleMovement()->TransmissionSetup.ChangeDownRPM = 2000.0f;
+	GetChaosVehicleMovement()->TransmissionSetup.ChangeUpRPM = 4000.0f;
+	GetChaosVehicleMovement()->TransmissionSetup.ChangeDownRPM = 1500.0f;
 	GetChaosVehicleMovement()->TransmissionSetup.GearChangeTime = 0.2f;
 	GetChaosVehicleMovement()->TransmissionSetup.TransmissionEfficiency = 0.9f;
 
@@ -107,9 +121,16 @@ ABSU_VehiclePawn::ABSU_VehiclePawn()
 	GetChaosVehicleMovement()->SteeringSetup.AngleRatio = 0.7f;
 }
 
+void ABSU_VehiclePawn::BeginPlay()
+{
+	Super::BeginPlay();
+
+}
+
 void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
 	// 1. 컨트롤러를 가져와서 PlayerController인지 캐스팅 해본다.
 	auto* pc = Cast<APlayerController>(Controller);
 	// 2. 캐스팅 성공했다면 
@@ -120,10 +141,9 @@ void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		// 4. SubSys를 이용해서 AddMappingContext를 한다.
 		if (subSys)
 		{
-			subSys->AddMappingContext(IMC_Player, 0);
+			subSys->AddMappingContext(IMC_Player, 1);
 		}
 	}
-
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		// steering 
@@ -151,6 +171,9 @@ void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		// reset the vehicle 
 		EnhancedInputComponent->BindAction(ResetVehicleAction, ETriggerEvent::Triggered, this, &ABSU_VehiclePawn::ResetVehicle);
+
+		// exit the vehicle
+		EnhancedInputComponent->BindAction(ExitVehicleAction, ETriggerEvent::Triggered, this, &ABSU_VehiclePawn::ExitVehicle);
 	}
 	else
 	{
@@ -171,8 +194,13 @@ void ABSU_VehiclePawn::Tick(float Delta)
 	CameraYaw = FMath::FInterpTo(CameraYaw, 0.0f, Delta, 1.0f);
 
 	BackSpringArm->SetRelativeRotation(FRotator(0.0f, CameraYaw, 0.0f));
+	APlayerController* LocalPlayerController = GetWorld()->GetFirstPlayerController();
 
-	ChaosVehicleMovement->SetThrottleInput(0.1f);
+	if (LocalPlayerController != nullptr)
+	{
+		if (LocalPlayerController->GetPawn() == this)
+			ChaosVehicleMovement->SetThrottleInput(0.3f);
+	}
 }
 
 void ABSU_VehiclePawn::Steering(const FInputActionValue& Value)
@@ -289,5 +317,41 @@ void ABSU_VehiclePawn::ResetVehicle(const FInputActionValue& Value)
 	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
 
 	UE_LOG(LogTemp, Error, TEXT("Reset Vehicle"));
+}
+
+void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
+{
+	// get the player controller
+
+	UE_LOG(LogTemp, Warning, TEXT("ExitVehicle"));
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	if (PlayerController != nullptr)
+	{
+		// unpossess the pawn
+		//PlayerController->UnPossess();
+
+		// AbaseCharacter를 찾아서 플레이어를 이동시킨다.
+		for (TActorIterator<ABaseCharacter> ActorIterator(GetWorld()); ActorIterator; ++ActorIterator)
+		{
+			ABaseCharacter* Player = *ActorIterator;
+			if (ActorIterator)
+			{
+				ActorIterator->SetActorHiddenInGame(false);
+				// Arrow 위치에 Player를 이동시킨다. (텔레포트)
+				ActorIterator->SetActorTransform(ArrowComp->GetComponentTransform(), false, nullptr, ETeleportType::TeleportPhysics);
+				UEnhancedInputLocalPlayerSubsystem* subSys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+				if (subSys)
+				{
+					subSys->RemoveMappingContext(IMC_Player);
+				}
+
+				//possess the player
+				PlayerController->Possess(*ActorIterator);
+
+				break;
+			}
+		}
+	}
 }
 

@@ -46,9 +46,18 @@ private:
 	
 protected:
 	
+	// box collision
+	UPROPERTY(EditDefaultsOnly)
+	class UBoxComponent* BoxComp;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UArrowComponent* ArrowComp;
+
+public:
 	UPROPERTY(EditDefaultsOnly)
 	class UInputMappingContext* IMC_Player;
 
+protected:
 	/** Steering Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* SteeringAction;
@@ -77,11 +86,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* ResetVehicleAction;
 
+	/** Exit Vehicle Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* ExitVehicleAction;
+
+
 	/** Keeps track of which camera is active */
 	bool bFrontCameraActive = false;
 
 public:
-	
+	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void Tick(float Delta) override;
 
@@ -115,6 +129,9 @@ protected:
 
 	/** Handles reset vehicle input */
 	void ResetVehicle(const FInputActionValue& Value);
+
+	/** Handles exit vehicle input */
+	void ExitVehicle(const FInputActionValue& Value);
 
 	/** Called when the brake lights are turned on or off */
 	UFUNCTION(BlueprintImplementableEvent, Category="Vehicle")
