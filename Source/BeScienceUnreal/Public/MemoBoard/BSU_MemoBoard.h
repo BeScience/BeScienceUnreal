@@ -25,4 +25,28 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnInteract();
+	void AddMemo(const FVector& pos, const FString& str);
+
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UStaticMeshComponent* MemoBoardMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UCameraComponent* CameraComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<class UBoxComponent*> MemoBoardBoxs;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBoxComponent* BoxComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USceneComponent* RootComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UWidgetComponent* WidgetComp;
+
+	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
+
+	FVector MemoPos;
 };
