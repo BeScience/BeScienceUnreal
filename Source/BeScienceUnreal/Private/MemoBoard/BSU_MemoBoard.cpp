@@ -7,6 +7,9 @@
 #include "Components/WidgetComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/HitResult.h"
+#include "MemoBoard/BSU_Memo.h"
+#include "Components/ArrowComponent.h"
+#include "MemoBoard/BSU_MemoEditWidget.h"
 
 // Sets default values
 ABSU_MemoBoard::ABSU_MemoBoard()
@@ -26,7 +29,7 @@ ABSU_MemoBoard::ABSU_MemoBoard()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(FName("CameraComp"));
 	CameraComp->SetupAttachment(RootComp);
 	// (X=-0.000001,Y=2410.000000,Z=0.000000)
-	CameraComp->SetRelativeLocation(FVector(-0.000001, 2410.000000, 0.000000));
+	CameraComp->SetRelativeLocation(FVector(-0.000001, 200.000000, 110.000000));
 	// (Pitch=0.000000,Yaw=-89.999999,Roll=0.000000)
 	CameraComp->SetRelativeRotation(FRotator(0.000000, -89.999999, 0.000000));
 
@@ -43,13 +46,20 @@ ABSU_MemoBoard::ABSU_MemoBoard()
 	WidgetComp->SetRelativeRotation(FRotator(0.000000, 89.999999, 0.000000));
 	// (X=0.333333,Y=10.000000,Z=0.500000)
 	WidgetComp->SetRelativeScale3D(FVector(0.333333, 10.000000, 0.500000));
+
+	ArrowComp = CreateDefaultSubobject<UArrowComponent>(FName("ArrowComp"));
+	ArrowComp->SetupAttachment(RootComp);
+	// (Pitch=0.000000,Yaw=90.000000,Roll=-0.000000)
+	ArrowComp->SetRelativeRotation(FRotator(0.000000, 90.000000, -0.000000));
 }
 
 // Called when the game starts or when spawned
 void ABSU_MemoBoard::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	EditWidget = CreateWidget<UBSU_MemoEditWidget>(GetWorld(), MemoEditWidgetFactory);
+	EditWidget->OnAttachMemoDelegate.BindUObject(this, &ABSU_MemoBoard::OnMemoEdit);
 }
 
 // Called every frame
@@ -63,6 +73,27 @@ void ABSU_MemoBoard::AddMemo(const FVector& pos, const FString& str)
 {
 	// 좌표에 메모 스폰함.
 	//GetWorld()->SpawnActor()
+	// local 좌표를 world 좌표로 변환
+	FVector WorldPos = GetActorTransform().TransformPosition(pos);
+	// ArrowComp 방향으로 살짝 앞으로 이동
+	WorldPos += ArrowComp->GetForwardVector() * 2.0f;
+
+	ABSU_Memo* Memo = GetWorld()->SpawnActor<ABSU_Memo>(MemoFactory, WorldPos, ArrowComp->GetComponentRotation());
+	if (Memo)
+	{
+		Memo->SetMemoText(str);
+	}
+}
+
+void ABSU_MemoBoard::OnMemoEdit(const FString& str)
+{
+	EditWidget->RemoveFromViewport();
+	AddMemo(MemoPos, str);
+}
+
+void ABSU_MemoBoard::OnMemoEditEnd()
+{
+	EditWidget->RemoveFromViewport();
 }
 
 void ABSU_MemoBoard::NotifyActorOnClicked(FKey ButtonPressed)
@@ -92,9 +123,11 @@ void ABSU_MemoBoard::NotifyActorOnClicked(FKey ButtonPressed)
 				FTransform ActorTransform = HitActor->GetActorTransform();
 
 				// 월드 좌표를 로컬 좌표로 변환합니다.
-				FVector LocalImpactPoint = ActorTransform.InverseTransformPosition(ImpactPoint);
-
-				AddMemo(LocalImpactPoint, "Hello");
+				MemoPos = ActorTransform.InverseTransformPosition(ImpactPoint);
+				
+				EditWidget->AddToViewport();
+				EditWidget->ShowMemoEditWidget();
+				// AddMemo(LocalImpactPoint, "Hello");
 
 				// 충돌한 컴포넌트
 				UPrimitiveComponent* HitComponent = HitResult.GetComponent();
