@@ -141,6 +141,9 @@ void ABaseCharacter::OnMyActionFunction(const FInputActionValue& inputValue)
 		if (board)
 		{
 			// board
+			// 숨기기
+			SetActorHiddenInGame(true);
+			board->OnInteract();
 		}
 	}
 }

@@ -96,7 +96,6 @@ void UCPP_KY_API_BaseComponent::HttpPostCall ()
 
 void UCPP_KY_API_BaseComponent::OnResHttpPostCallBack ( FHttpRequestPtr req , FHttpResponsePtr res , bool bConnectedSuccessfully )
 {
-	UE_LOG ( LogTemp , Warning , TEXT ( "[POST] call back %s" ) , *req.Get ()->GetURL() );
 	if (bConnectedSuccessfully)
 	{
 		FString result = res->GetContentAsString ();
