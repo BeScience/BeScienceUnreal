@@ -20,7 +20,10 @@ void UCPP_KY_WG_LoginPage::NativeConstruct()
 void UCPP_KY_WG_LoginPage::LoginButtonOnClick()
 {
 	if (bHttpWaitresponse)
+	{
+		UE_LOG(LogTemp, Display, TEXT("로그인 중입니다."));
 		return;
+	}
 	bHttpWaitresponse = true;
 	HttpPostLoginCall(this->ET_Name->GetText().ToString(), this->ET_PassWord->GetText().ToString());
 }
@@ -54,7 +57,7 @@ void UCPP_KY_WG_LoginPage::OnResHttpPostLoginCallBack(FHttpRequestPtr req, FHttp
 		FString result = res->GetContentAsString();
 		//	FJsonPlayer playerlist = UIJsonPersePlayer(result);
 		UE_LOG(LogTemp, Warning, TEXT("[POST] player id %s  ??  %d"), *result, res->GetResponseCode());
-		if (res->GetStatus() == 200)
+		if (res->GetResponseCode() == 200)
 		{
 			//성공 했을때 동작 추가
 			MyNativeLoginEvent();

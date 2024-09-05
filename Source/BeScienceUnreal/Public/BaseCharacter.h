@@ -31,7 +31,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class USpringArmComponent* SpringArmComp;
 
-		UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	class UCameraComponent* CameraComp;
 
 
