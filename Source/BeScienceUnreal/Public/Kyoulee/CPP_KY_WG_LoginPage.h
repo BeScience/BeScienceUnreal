@@ -53,6 +53,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void MyNativeLoginEvent();
+
 public:
 
 	UFUNCTION(BlueprintCallable)
