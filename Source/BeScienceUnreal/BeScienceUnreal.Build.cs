@@ -8,7 +8,7 @@ public class BeScienceUnreal : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "HTTP", "Json", "JsonUtilities", "OpenCVHelper", "OpenCV" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "HTTP", "Json", "JsonUtilities", "OpenCVHelper", "OpenCV", "AudioCapture", "SignalProcessing" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
