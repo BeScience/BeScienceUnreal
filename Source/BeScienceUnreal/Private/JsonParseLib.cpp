@@ -11,9 +11,9 @@ bool UJsonParseLib::JsonParse(const FString& json, FString& Name, FString& Messa
 	TSharedPtr<FJsonObject> result = MakeShareable(new FJsonObject);
 	if (FJsonSerializer::Deserialize(reader, result))
 	{
-		Name = result->GetStringField(TEXT("characterName"));
-		FString VoiceData = result->GetStringField(TEXT("characterVoiceData"));
-		Message = result->GetStringField(TEXT("characterText"));
+		Name = result->GetStringField(TEXT("docent"));
+		FString VoiceData = result->GetStringField(TEXT("resultwav"));
+		Message = result->GetStringField(TEXT("msg"));
 
 		FBase64::Decode(VoiceData, OutFileData);
 	}
