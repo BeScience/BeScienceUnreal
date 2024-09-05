@@ -42,7 +42,6 @@ void UCPP_KY_WG_LoginJoinPage::HttpPostJoinCall(FString username, FString passwo
 	req->SetContentAsString(json);
 
 	req->OnProcessRequestComplete().BindUObject(this, &UCPP_KY_WG_LoginJoinPage::OnResHttpPostJoinCallBack);
-
 	req->ProcessRequest();
 }
 
