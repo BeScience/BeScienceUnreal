@@ -52,7 +52,7 @@ public:
 	bool bHttpWaitresponse = false;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void MyNativeEvent();
+	void MyNativeLoginEvent();
 public:
 
 	UFUNCTION(BlueprintCallable)

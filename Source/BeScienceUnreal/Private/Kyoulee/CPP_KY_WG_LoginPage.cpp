@@ -48,15 +48,16 @@ void UCPP_KY_WG_LoginPage::HttpPostLoginCall(FString username, FString password)
 
 void UCPP_KY_WG_LoginPage::OnResHttpPostLoginCallBack(FHttpRequestPtr req, FHttpResponsePtr res, bool bConnectedSuccessfully)
 {
+	UE_LOG(LogTemp, Warning, TEXT("OnResHttpPostLoginCallBack"));
 	if (bConnectedSuccessfully)
 	{
 		FString result = res->GetContentAsString();
 		//	FJsonPlayer playerlist = UIJsonPersePlayer(result);
-		UE_LOG(LogTemp, Warning, TEXT("[POST] player id %s "), *result);
+		UE_LOG(LogTemp, Warning, TEXT("[POST] player id %s  ??  %d"), *result, res->GetResponseCode());
 		if (res->GetStatus() == 200)
 		{
 			//성공 했을때 동작 추가
-			MyNativeEvent();
+			MyNativeLoginEvent();
 		}
 	}
 	bHttpWaitresponse = false;
