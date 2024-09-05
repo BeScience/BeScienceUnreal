@@ -67,7 +67,6 @@ void UBSU_MemoHttpComponent::OnResPostAttachMemo(FHttpRequestPtr Request, FHttpR
 	{
 		UE_LOG(LogTemp, Warning, TEXT("OnResPostAttachMemo... failed"));
 	}
-
 }
 
 void UBSU_MemoHttpComponent::ReqPostGetAllMemo()

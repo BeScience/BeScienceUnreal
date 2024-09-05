@@ -67,6 +67,15 @@ public:
 	void MoveCamera();
 
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UPROPERTY(ReplicatedUsing = OnRep_HiddenState)
+    bool bIsHidden;
+	
+	UFUNCTION()
+    void OnRep_HiddenState();
 
+	    // 서버에서 숨김 상태를 설정하는 함수
+    UFUNCTION(Server, Reliable, WithValidation)
+    void ServerSetHidden(bool bPlayerHidden);
 };

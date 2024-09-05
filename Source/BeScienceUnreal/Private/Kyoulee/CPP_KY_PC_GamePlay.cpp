@@ -16,3 +16,24 @@ void ACPP_KY_PC_GamePlay::BeginPlay ()
 		}
 	}
 }
+
+void ACPP_KY_PC_GamePlay::EnterVehicle(class APawn* vehicle)
+{
+	if (IsLocalController())
+	{
+		ServerPossess(vehicle);
+	}
+}
+
+void ACPP_KY_PC_GamePlay::ExitVehicle(class APawn* playerCharacter)
+{
+	if (IsLocalController())
+	{
+		ServerPossess(playerCharacter);
+	}
+}
+
+void ACPP_KY_PC_GamePlay::ServerPossess_Implementation(class APawn* possessPawn)
+{
+	Possess(possessPawn);
+}

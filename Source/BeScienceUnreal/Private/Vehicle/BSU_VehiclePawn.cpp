@@ -16,6 +16,7 @@
 #include "Components/ArrowComponent.h"
 #include "BaseCharacter.h"
 #include "Runtime/Engine/public/EngineUtils.h"
+#include "Kyoulee/CPP_KY_PC_GamePlay.h"
 
 ABSU_VehiclePawn::ABSU_VehiclePawn()
 {
@@ -337,7 +338,7 @@ void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
 			ABaseCharacter* Player = *ActorIterator;
 			if (ActorIterator)
 			{
-				ActorIterator->SetActorHiddenInGame(false);
+				ActorIterator->ServerSetHidden(false);
 				// Arrow 위치에 Player를 이동시킨다. (텔레포트)
 				ActorIterator->SetActorTransform(ArrowComp->GetComponentTransform(), false, nullptr, ETeleportType::TeleportPhysics);
 				UEnhancedInputLocalPlayerSubsystem* subSys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
@@ -347,7 +348,12 @@ void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
 				}
 
 				//possess the player
-				PlayerController->Possess(*ActorIterator);
+				ACPP_KY_PC_GamePlay* pcgp = Cast<ACPP_KY_PC_GamePlay>(PlayerController);
+				if (pcgp)
+				{
+					pcgp->ExitVehicle(Player);
+				}
+
 				TearDownOpencv();
 
 				break;

@@ -8,6 +8,8 @@
 #include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h"
 #include "Vehicle/BSU_VehiclePawn.h"
 #include "MemoBoard/BSU_MemoBoard.h"
+#include "Kyoulee/CPP_KY_PC_GamePlay.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -132,7 +134,12 @@ void ABaseCharacter::OnMyActionFunction(const FInputActionValue& inputValue)
 
 				SetActorHiddenInGame(true);
 
-				pc->Possess(pawn);
+				ACPP_KY_PC_GamePlay* pcgp = Cast<ACPP_KY_PC_GamePlay>(pc);
+				if (pcgp)
+				{
+					pcgp->EnterVehicle(pawn);
+				}
+
 				pawn->SetupOpencv();
 			}
 		}
@@ -142,7 +149,7 @@ void ABaseCharacter::OnMyActionFunction(const FInputActionValue& inputValue)
 		{
 			// board
 			// 숨기기
-			SetActorHiddenInGame(true);
+			ServerSetHidden(true);
 			board->OnInteract();
 		}
 	}
@@ -154,4 +161,31 @@ void ABaseCharacter::CameraMoveMent()
 
 void ABaseCharacter::MoveCamera()
 {
+}
+
+void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// bIsHidden 변수를 복제 설정
+	DOREPLIFETIME(ABaseCharacter, bIsHidden);
+}
+
+void ABaseCharacter::OnRep_HiddenState()
+{
+	SetActorHiddenInGame(bIsHidden);
+}
+
+void ABaseCharacter::ServerSetHidden_Implementation(bool bPlayerHidden)
+{
+	// 서버에서 상태를 설정하고 이를 클라이언트로 전파
+	bIsHidden = bPlayerHidden;
+
+	// 서버에서도 직접 SetActorHiddenInGame을 호출
+	SetActorHiddenInGame(bIsHidden);
+}
+
+bool ABaseCharacter::ServerSetHidden_Validate(bool bPlayerHidden)
+{
+	return true;
 }

@@ -24,4 +24,14 @@ public:
 	UPROPERTY ( EditDefaultsOnly , BlueprintReadWrite , Category = "WidgetView" )
 	TSubclassOf<UCPP_KY_WG_Gameplay_HUD> WBP_Gameplay_HUD_Class;
 
+
+	void EnterVehicle(class APawn* vehicle);
+	void ExitVehicle(class APawn* playerCharacter);
+
+	// 차량에 탑승했을 때 호출되는 함수
+	
+	UFUNCTION(Server, Reliable)
+	void ServerPossess(class APawn* possessPawn);
+
+
 };
