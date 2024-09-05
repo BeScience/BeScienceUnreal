@@ -62,9 +62,6 @@ void AHttpActor::ReqPostForm(FString ServerURL, FString form, TArray<uint8>& con
 void AHttpActor::ReqPostText(FString ServerURL, FString json, TArray<uint8>& contents)
 {
 	FHttpModule& httpModule = FHttpModule::Get();
-	httpModule.SetHttpTimeout(360);
-	float timeout = httpModule.GetHttpConnectionTimeout();
-	UE_LOG(LogTemp, Warning, TEXT("ReqPostText... %f"), timeout);
 	TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
 	req->SetURL(ServerURL);
 	req->SetVerb(TEXT("POST"));
@@ -76,7 +73,6 @@ void AHttpActor::ReqPostText(FString ServerURL, FString json, TArray<uint8>& con
 
 	UE_LOG(LogTemp, Warning, TEXT("ReqPostText... %d"), json.Len());
 	// UE_LOG(LogTemp, Warning, TEXT("ReqPostText..."));
-	req->SetTimeout(360);
 	req->OnProcessRequestComplete().BindUObject(this, &AHttpActor::OnResPostText);
 	// 타임아웃 시간 늘리기
 
@@ -213,9 +209,9 @@ void AHttpActor::SendSoundWaveFile(int32 index, FString name, const FString& Fil
 	}
 
 	TMap <FString, FString> studentData;
-	studentData.Add("characterName", name);
+	studentData.Add("docent", name);
 	// json to byte
-	studentData.Add("characterVoiceData", FBase64::Encode(AudioData));
+	studentData.Add("wav", FBase64::Encode(AudioData));
 
 	FString json = UJsonParseLib::MakeJson(studentData);
 

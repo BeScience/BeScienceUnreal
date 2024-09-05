@@ -53,7 +53,7 @@ public:
 	TArray<UTexture2D*> Icons;
 
 
-	FString URL = TEXT("/");
+	FString URL = TEXT("59.13.225.125:8888/stt-tts-chat");
 	FString Key = TEXT("/");
 
 
