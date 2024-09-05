@@ -10,6 +10,7 @@
 #include "MemoBoard/BSU_Memo.h"
 #include "Components/ArrowComponent.h"
 #include "MemoBoard/BSU_MemoEditWidget.h"
+#include "MemoBoard/BSU_MemoHttpComponent.h"
 
 // Sets default values
 ABSU_MemoBoard::ABSU_MemoBoard()
@@ -51,6 +52,8 @@ ABSU_MemoBoard::ABSU_MemoBoard()
 	ArrowComp->SetupAttachment(RootComp);
 	// (Pitch=0.000000,Yaw=90.000000,Roll=-0.000000)
 	ArrowComp->SetRelativeRotation(FRotator(0.000000, 90.000000, -0.000000));
+
+	MemoHttpComp = CreateDefaultSubobject<UBSU_MemoHttpComponent>(FName("MemoHttpComp"));
 }
 
 // Called when the game starts or when spawned
@@ -83,6 +86,18 @@ void ABSU_MemoBoard::AddMemo(const FVector& pos, const FString& str)
 	{
 		Memo->SetMemoText(str);
 	}
+
+	MemoArray.Add(Memo);
+}
+
+void ABSU_MemoBoard::DeleteAllMemo()
+{
+	for (ABSU_Memo* Memo : MemoArray)
+	{
+		Memo->Destroy();
+	}
+
+	MemoArray.Empty();
 }
 
 void ABSU_MemoBoard::OnMemoEdit(const FString& str)

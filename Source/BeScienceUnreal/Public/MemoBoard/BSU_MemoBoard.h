@@ -26,6 +26,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnInteract();
 	void AddMemo(const FVector& pos, const FString& str);
+	void DeleteAllMemo();
+
 	void OnMemoEdit(const FString& str);
 
 	UFUNCTION(BlueprintCallable)
@@ -39,7 +41,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<class UBoxComponent*> MemoBoardBoxs;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBoxComponent* BoxComp;
 
@@ -51,6 +53,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UArrowComponent* ArrowComp;
+
+	class UBSU_MemoHttpComponent* MemoHttpComp;
 
 	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
 
@@ -64,4 +68,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBSU_MemoEditWidget* EditWidget;
+
+	TArray<ABSU_Memo*> MemoArray;
 };
