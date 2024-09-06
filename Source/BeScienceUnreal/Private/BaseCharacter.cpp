@@ -10,6 +10,7 @@
 #include "MemoBoard/BSU_MemoBoard.h"
 #include "Kyoulee/CPP_KY_PC_GamePlay.h"
 #include "Net/UnrealNetwork.h"
+#include "../BeScienceUnreal.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -56,7 +57,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 	Direction = FVector::ZeroVector;
 
 
-
+	PrintNetLog();
 }
 
 // Called to bind functionality to input
@@ -172,11 +173,13 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 void ABaseCharacter::OnRep_HiddenState()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("OnRep_HiddenState"));
 	SetActorHiddenInGame(bIsHidden);
 }
 
 void ABaseCharacter::ServerSetHidden_Implementation(bool bPlayerHidden)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("ServerSetHidden_Implementation"));
 	// 서버에서 상태를 설정하고 이를 클라이언트로 전파
 	bIsHidden = bPlayerHidden;
 
@@ -187,4 +190,22 @@ void ABaseCharacter::ServerSetHidden_Implementation(bool bPlayerHidden)
 bool ABaseCharacter::ServerSetHidden_Validate(bool bPlayerHidden)
 {
 	return true;
+}
+
+void ABaseCharacter::SetHidden(bool bPlayerHidden)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SetHidden"));
+	// 클라이언트에서 상태를 설정하고 이를 서버로 전파
+	ServerSetHidden(bPlayerHidden);
+}
+
+void ABaseCharacter::PrintNetLog()
+{
+	const FString& name = GetNetConnection() != nullptr ? TEXT("Valid Connection") : TEXT("Invalid Connection");
+	const FString& onwerName = GetOwner() != nullptr ? GetOwner()->GetName() : TEXT("No Owner");
+
+	const FString logStr = FString::Printf(TEXT("Net Connection : %s\nOwnerName : %s\n LocalRole : %s \n RemoteRole : %s "), *name, *onwerName, *LOCALROLE, *REMOTEROLE);
+
+	DrawDebugString(GetWorld(), GetActorLocation() + FVector::UpVector * 100, logStr, 0, FColor::Red, 0.0f, true, 1);
+
 }

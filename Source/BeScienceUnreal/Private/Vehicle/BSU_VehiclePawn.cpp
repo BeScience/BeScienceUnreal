@@ -17,6 +17,7 @@
 #include "BaseCharacter.h"
 #include "Runtime/Engine/public/EngineUtils.h"
 #include "Kyoulee/CPP_KY_PC_GamePlay.h"
+#include "../../BeScienceUnreal.h"
 
 ABSU_VehiclePawn::ABSU_VehiclePawn()
 {
@@ -202,6 +203,8 @@ void ABSU_VehiclePawn::Tick(float Delta)
 		if (LocalPlayerController->GetPawn() == this)
 			ChaosVehicleMovement->SetThrottleInput(0.5f);
 	}
+
+	PrintNetLog();
 }
 
 void ABSU_VehiclePawn::Steering(const FInputActionValue& Value)
@@ -336,29 +339,42 @@ void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
 		for (TActorIterator<ABaseCharacter> ActorIterator(GetWorld()); ActorIterator; ++ActorIterator)
 		{
 			ABaseCharacter* Player = *ActorIterator;
-			if (ActorIterator)
+			if (Player->IsHidden())
 			{
-				ActorIterator->ServerSetHidden(false);
-				// Arrow 위치에 Player를 이동시킨다. (텔레포트)
-				ActorIterator->SetActorTransform(ArrowComp->GetComponentTransform(), false, nullptr, ETeleportType::TeleportPhysics);
-				UEnhancedInputLocalPlayerSubsystem* subSys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-				if (subSys)
+				if (Player)
 				{
-					subSys->RemoveMappingContext(IMC_Player);
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("ExitVehicle"));
+					
+					// Arrow 위치에 Player를 이동시킨다. (텔레포트)
+					Player->SetActorTransform(ArrowComp->GetComponentTransform(), false, nullptr, ETeleportType::TeleportPhysics);
+					UEnhancedInputLocalPlayerSubsystem* subSys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+					if (subSys)
+					{
+						subSys->RemoveMappingContext(IMC_Player);
+					}
+
+					//possess the player
+					ACPP_KY_PC_GamePlay* pcgp = Cast<ACPP_KY_PC_GamePlay>(PlayerController);
+					if (pcgp)
+					{
+						pcgp->ExitVehicle(Player);
+					}
+
+					TearDownOpencv();
+
+					break;
 				}
-
-				//possess the player
-				ACPP_KY_PC_GamePlay* pcgp = Cast<ACPP_KY_PC_GamePlay>(PlayerController);
-				if (pcgp)
-				{
-					pcgp->ExitVehicle(Player);
-				}
-
-				TearDownOpencv();
-
-				break;
 			}
 		}
 	}
 }
 
+void ABSU_VehiclePawn::PrintNetLog()
+{
+	const FString& name = GetNetConnection() != nullptr ? TEXT("Valid Connection") : TEXT("Invalid Connection");
+	const FString& onwerName = GetOwner() != nullptr ? GetOwner()->GetName() : TEXT("No Owner");
+
+	const FString logStr = FString::Printf(TEXT("Net Connection : %s\nOwnerName : %s\n LocalRole : %s \n RemoteRole : %s "), *name, *onwerName, *LOCALROLE, *REMOTEROLE);
+
+	DrawDebugString(GetWorld(), GetActorLocation() + FVector::UpVector * 100, logStr, 0, FColor::Red, 0.0f, true, 1);
+}

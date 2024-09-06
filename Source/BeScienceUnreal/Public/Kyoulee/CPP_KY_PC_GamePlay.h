@@ -33,5 +33,6 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerPossess(class APawn* possessPawn);
 
-
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPossess(class APawn* possessPawn);
 };

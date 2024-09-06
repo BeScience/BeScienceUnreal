@@ -2,6 +2,8 @@
 
 
 #include "Kyoulee/CPP_KY_PC_GamePlay.h"
+#include "Net/UnrealNetwork.h"
+#include "BaseCharacter.h"
 
 void ACPP_KY_PC_GamePlay::BeginPlay ()
 {
@@ -35,5 +37,17 @@ void ACPP_KY_PC_GamePlay::ExitVehicle(class APawn* playerCharacter)
 
 void ACPP_KY_PC_GamePlay::ServerPossess_Implementation(class APawn* possessPawn)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("이것은 로그 메시지입니다!"));
+	MulticastPossess(possessPawn);
+}
+
+void ACPP_KY_PC_GamePlay::MulticastPossess_Implementation(class APawn* possessPawn)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("이것은 로그 메시지입니다!"));
 	Possess(possessPawn);
+	ABaseCharacter* player = Cast<ABaseCharacter>(possessPawn);
+	if (player)
+	{
+		player->SetHidden(false);
+	}
 }

@@ -78,4 +78,8 @@ public:
 	    // 서버에서 숨김 상태를 설정하는 함수
     UFUNCTION(Server, Reliable, WithValidation)
     void ServerSetHidden(bool bPlayerHidden);
+
+	void SetHidden(bool bPlayerHidden);
+
+	void PrintNetLog();
 };
