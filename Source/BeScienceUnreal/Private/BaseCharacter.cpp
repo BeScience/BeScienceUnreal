@@ -132,8 +132,7 @@ void ABaseCharacter::OnMyActionFunction(const FInputActionValue& inputValue)
 					subSys->RemoveMappingContext(pawn->IMC_Player);
 				}
 
-				SetActorHiddenInGame(true);
-
+				ServerSetHidden(true);
 				ACPP_KY_PC_GamePlay* pcgp = Cast<ACPP_KY_PC_GamePlay>(pc);
 				if (pcgp)
 				{
@@ -149,7 +148,7 @@ void ABaseCharacter::OnMyActionFunction(const FInputActionValue& inputValue)
 		{
 			// board
 			// 숨기기
-			ServerSetHidden(true);
+			SetActorHiddenInGame(true);
 			board->OnInteract();
 		}
 	}
