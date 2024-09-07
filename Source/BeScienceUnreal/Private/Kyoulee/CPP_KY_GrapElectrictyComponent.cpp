@@ -34,6 +34,14 @@ void UCPP_KY_GrapElectrictyComponent::TickComponent(float DeltaTime, ELevelTick 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+	PrintNetLog();
+}
+
+void UCPP_KY_GrapElectrictyComponent::PrintNetLog()
+{
+	const FString conStr = this->Owner->GetNetConnection() != nullptr ? TEXT("Valid connection") : TEXT("Invalid Connection");
+
+	DrawDebugString(GetWorld(), this->Owner->GetActorLocation(), conStr, nullptr, FColor::Red, 0, true, 1);
 }
 
 void UCPP_KY_GrapElectrictyComponent::InitializeComponent()
