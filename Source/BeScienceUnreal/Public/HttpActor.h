@@ -31,6 +31,8 @@ public:
 
 	void ReqPostForm(FString ServerURL, FString form, TArray<uint8>& contents);
 	void ReqPostText(FString ServerURL, FString json, TArray<uint8>& contents);
+	
+	
 	void OnResPostText(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	class USoundWaveProcedural* CreateSoundWaveProceduralFromWavData(const TArray<uint8>& RawWavData);
@@ -53,7 +55,7 @@ public:
 	TArray<UTexture2D*> Icons;
 
 
-	FString URL = TEXT("59.13.225.125:8888/stt-tts-chat");
+	FString URL = TEXT("http://59.13.225.125:8888/stt-tts-chat");
 	FString Key = TEXT("/");
 
 
