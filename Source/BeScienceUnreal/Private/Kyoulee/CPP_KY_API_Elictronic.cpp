@@ -33,6 +33,10 @@ void ACPP_KY_API_Elictronic::Tick(float DeltaTime)
 
 void ACPP_KY_API_Elictronic::HttpGetElictronicCall()
 {
+	if (!this->HttpCallEnd) {
+		return;
+	}
+	this->HttpCallEnd = false;
 	FHttpModule& httpModule = FHttpModule::Get();
 
 	TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
@@ -56,9 +60,10 @@ void ACPP_KY_API_Elictronic::OnResHttpPostElictronicCallBack(FHttpRequestPtr req
 		if (res->GetResponseCode() == 200)
 		{
 			//성공 했을때 동작 추가
-
+			HttpCallBack(FVector(1));
 		}
 	}
+	this->HttpCallEnd = true;
 
 }
 

@@ -8,17 +8,34 @@
 #include "CPP_KY_API_Elictronic.generated.h"
 
 USTRUCT(BlueprintType)
+struct FJsonElictronicHandPoint
+{
+	GENERATED_USTRUCT_BODY()
+
+		FJsonElictronicHandPoint() : index(0), x(0), y(0), z(0){};
+
+	UPROPERTY()
+	int32 index;
+	UPROPERTY()
+	float x;
+	UPROPERTY()
+	float y;
+	UPROPERTY()
+	float z;
+};
+
+USTRUCT(BlueprintType)
 struct FJsonElictronic
 {
 	GENERATED_USTRUCT_BODY()
 
-	FJsonElictronic() : gesture("name"){};
-
-	FJsonElictronic(FString name, FString password) : gesture(name){ };
+	FJsonElictronic() : gesture("0"), landmarks(){};
 
 	UPROPERTY()
-		FString gesture;
+	FString gesture;
 
+	UPROPERTY()
+	TArray<FJsonElictronicHandPoint> landmarks;
 };
 
 
@@ -42,6 +59,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void HttpGetElictronicCall();
+	
+	UPROPERTY(BlueprintReadWrite)
+	bool HttpCallEnd = true;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void HttpCallBack(FVector HandPosition);
 
 	void OnResHttpPostElictronicCallBack(FHttpRequestPtr req, FHttpResponsePtr res, bool bConnectedSuccessfully);
 
