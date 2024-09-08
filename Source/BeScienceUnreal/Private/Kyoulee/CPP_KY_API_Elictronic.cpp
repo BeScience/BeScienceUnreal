@@ -55,12 +55,13 @@ void ACPP_KY_API_Elictronic::OnResHttpPostElictronicCallBack(FHttpRequestPtr req
 	if (bConnectedSuccessfully)
 	{
 		FString result = res->GetContentAsString();
-		//	FJsonPlayer playerlist = UIJsonPersePlayer(result);
+		FJsonElictronic playerlist = UIJsonPerseElictronic(result);
 		UE_LOG(LogTemp, Warning, TEXT("[Get] OnResHttpGetElictornicCallBack id %s  ??  %d"), *result, res->GetResponseCode());
 		if (res->GetResponseCode() == 200)
 		{
 			//성공 했을때 동작 추가
-			HttpCallBack(FVector(1));
+			FVector HandPostion = FVector(playerlist.landmarks[0].x, playerlist.landmarks[0].y, playerlist.landmarks[0].z);
+			HttpCallBack(HandPostion);
 		}
 	}
 	this->HttpCallEnd = true;
@@ -69,6 +70,16 @@ void ACPP_KY_API_Elictronic::OnResHttpPostElictronicCallBack(FHttpRequestPtr req
 
 FJsonElictronic ACPP_KY_API_Elictronic::UIJsonPerseElictronic(FString something)
 {
-	return FJsonElictronic();
+
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<TCHAR>::Create(something);
+
+	FJsonElictronic HandPostions;
+	TSharedPtr<FJsonObject> JsonObject;
+
+	FJsonSerializer::Deserialize(JsonReader, JsonObject);
+
+	FJsonObjectConverter::JsonObjectToUStruct<FJsonElictronic>(JsonObject.ToSharedRef(), &HandPostions);
+
+	return HandPostions;
 }
 
