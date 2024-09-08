@@ -371,10 +371,10 @@ void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
 
 void ABSU_VehiclePawn::PrintNetLog()
 {
-	const FString& name = GetNetConnection() != nullptr ? TEXT("Valid Connection") : TEXT("Invalid Connection");
-	const FString& onwerName = GetOwner() != nullptr ? GetOwner()->GetName() : TEXT("No Owner");
-
-	const FString logStr = FString::Printf(TEXT("Net Connection : %s\nOwnerName : %s\n LocalRole : %s \n RemoteRole : %s "), *name, *onwerName, *LOCALROLE, *REMOTEROLE);
-
-	DrawDebugString(GetWorld(), GetActorLocation() + FVector::UpVector * 100, logStr, 0, FColor::Red, 0.0f, true, 1);
+// 	const FString& name = GetNetConnection() != nullptr ? TEXT("Valid Connection") : TEXT("Invalid Connection");
+// 	const FString& onwerName = GetOwner() != nullptr ? GetOwner()->GetName() : TEXT("No Owner");
+// 
+// 	const FString logStr = FString::Printf(TEXT("Net Connection : %s\nOwnerName : %s\n LocalRole : %s \n RemoteRole : %s "), *name, *onwerName, *LOCALROLE, *REMOTEROLE);
+// 
+// 	DrawDebugString(GetWorld(), GetActorLocation() + FVector::UpVector * 100, logStr, 0, FColor::Red, 0.0f, true, 1);
 }
