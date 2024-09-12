@@ -55,13 +55,14 @@ void UCPP_KY_WG_LoginPage::OnResHttpPostLoginCallBack(FHttpRequestPtr req, FHttp
 	if (bConnectedSuccessfully)
 	{
 		FString result = res->GetContentAsString();
-		//	FJsonPlayer playerlist = UIJsonPersePlayer(result);
-		UE_LOG(LogTemp, Warning, TEXT("[POST] player id %s  ??  %d"), *result, res->GetResponseCode());
+		this->HttpResult = result;
+		this->HttpStatus = res->GetResponseCode();
+
 		if (res->GetResponseCode() == 200)
 		{
 			//성공 했을때 동작 추가
-			MyNativeLoginEvent();
 		}
+		MyNativeLoginEvent();
 	}
 	bHttpWaitresponse = false;
 }
