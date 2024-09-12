@@ -19,6 +19,7 @@
 #include "DSP/BufferVectorOperations.h"
 #include "DSP/FloatArrayMath.h"
 #include "Sound/SoundWaveProcedural.h"
+#include "MessageWidget.h"
 
 // Sets default values
 AHttpActor::AHttpActor()
@@ -250,15 +251,15 @@ void AHttpActor::ReqPostMessage(FString name, FString Message)
 void AHttpActor::DelegateMessage(FString Name, FString Message)
 {
 
-// 	UE_LOG(LogTemp, Warning, TEXT("DelegateMessage Name : %s, Message : %s"), *Name, *Message);
-// 	if (IconIndex == 0)
-// 	{
-// 		MessageWidget->ShowDialogForDuration(Icons[0], Name, Message);
-// 	}
-// 	else
-// 	{
-// 		MessageWidget->ShowDialogForDuration(Icons[1], Name, Message);
-// 	}
+	UE_LOG(LogTemp, Warning, TEXT("DelegateMessage Name : %s, Message : %s"), *Name, *Message);
+	if (IconIndex == 0)
+	{	
+		MessageWidget->ShowDialogForDuration(Icons[0], Name, Message);
+	}
+	else
+	{
+		MessageWidget->ShowDialogForDuration(Icons[1], Name, Message);
+	}
 
 }
 

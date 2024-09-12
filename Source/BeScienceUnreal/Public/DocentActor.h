@@ -34,4 +34,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FString DocentName;
+
+	
+	
 };
