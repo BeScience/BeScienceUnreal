@@ -63,6 +63,8 @@ void ABSU_MemoBoard::BeginPlay()
 
 	EditWidget = CreateWidget<UBSU_MemoEditWidget>(GetWorld(), MemoEditWidgetFactory);
 	EditWidget->OnAttachMemoDelegate.BindUObject(this, &ABSU_MemoBoard::OnMemoEdit);
+
+	MemoHttpComp->ReqPostGetAllMemo();
 }
 
 // Called every frame
@@ -88,6 +90,9 @@ void ABSU_MemoBoard::AddMemo(const FVector& pos, const FString& str)
 	}
 
 	MemoArray.Add(Memo);
+
+	// 서버에 메모 추가
+	MemoHttpComp->AttachMemo(str, pos);
 }
 
 void ABSU_MemoBoard::DeleteAllMemo()
