@@ -59,9 +59,11 @@ public:
 // 	FString URL = TEXT("http://183.109.66.119:8000/stt-tts-chat");
 	FString Key = TEXT("/");
 
-
-
-
+	//메시지 
+	UPROPERTY()
+	class UMessageWidget* MessageWidget;
+	
+	
 
 
 };
