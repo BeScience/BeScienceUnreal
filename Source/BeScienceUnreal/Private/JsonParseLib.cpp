@@ -24,39 +24,38 @@ bool UJsonParseLib::JsonParse(const FString& json, FString& Name, FString& Messa
 
 bool UJsonParseLib::JsonParseMemoAll(const FString& json, TArray<TPair<FString, FVector>>& Memos)
 {
+	/**
+	 * 
+	 [
+		{"text":"string","x":"string","y":"string","z":"string"},
+		{"text":null,"x":"-208.791321","y":"0.000003","z":"457.506073"},
+		{"text":"과학","x":"-84.932098","y":"0.000001","z":"567.2099"},
+		{"text":"과학2","x":"235.332382","y":"-0.000003","z":"448.658997"},
+		{"text":"과학2","x":"235.332382","y":"-0.000003","z":"448.658997"}
+	]
+	 */
+
 	TSharedRef<TJsonReader<TCHAR>> reader = TJsonReaderFactory<TCHAR>::Create(json);
-	TSharedPtr<FJsonObject> result = MakeShareable(new FJsonObject);
-	if (FJsonSerializer::Deserialize(reader, result))
+	TArray<TSharedPtr<FJsonValue>> result;
+
+	if (!FJsonSerializer::Deserialize(reader, result))
 	{
-		TArray<TSharedPtr<FJsonValue>> memoArray = result->GetArrayField(TEXT("memos"));
-		for (TSharedPtr<FJsonValue> memoValue : memoArray)
-		{
-			TSharedPtr<FJsonObject> memoObject = memoValue->AsObject();
-			FString Name = memoObject->GetStringField(TEXT("name"));
-			FVector Pos;
-			// "pos": "0.000000,0.000000,0.000000"
-			FString PosString = memoObject->GetStringField(TEXT("pos"));
-			TArray<FString> Parts;
-			// Split the string using comma as a delimiter
-			PosString.ParseIntoArray(Parts, TEXT(","), true);
-			
-			if (Parts.Num() == 3)  // Ensure that there are exactly 3 parts
-			{
-				FString X = Parts[0];
-				FString Y = Parts[1];
-				FString Z = Parts[2];
+		return false;
+	}
 
-				Pos.X = FCString::Atof(*X);
-				Pos.Y = FCString::Atof(*Y);
-				Pos.Z = FCString::Atof(*Z);
+	for (TSharedPtr<FJsonValue> Value : result)
+	{
+		TSharedPtr<FJsonObject> Object = Value->AsObject();
+		FString text = Object->GetStringField(TEXT("text"));
+		FString x = Object->GetStringField(TEXT("x"));
+		FString y = Object->GetStringField(TEXT("y"));
+		FString z = Object->GetStringField(TEXT("z"));
 
-				Memos.Add(TPair<FString, FVector>(Name, Pos));
-			}
-		}
+		FVector pos(FCString::Atof(*x), FCString::Atof(*y), FCString::Atof(*z));
+		Memos.Add(TPair<FString, FVector>(text, pos));
 	}
 
 	return true;
-
 }
 
 FString UJsonParseLib::MakeJson(const TMap<FString, FString> Sources)

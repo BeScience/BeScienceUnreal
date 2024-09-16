@@ -25,16 +25,20 @@ void UBSU_MemoHttpComponent::BeginPlay()
 
 	// ...
 	Me = Cast<ABSU_MemoBoard>(GetOwner());
-
-	//ReqPostGetAllMemo(URL);
 }
 
 void UBSU_MemoHttpComponent::AttachMemo(FString memo, FVector3d pos)
 {
 	TMap <FString, FString> studentData;
-	studentData.Add("memo", memo);
+	studentData.Add("text", memo);
 	// json to byte
-	studentData.Add("pos", pos.ToString());
+	float x = pos.X;
+	float y = pos.Y;
+	float z = pos.Z;
+	// studentData.Add("x", x.ToString());
+	studentData.Add("x", FString::SanitizeFloat(x));
+	studentData.Add("y", FString::SanitizeFloat(y));
+	studentData.Add("z", FString::SanitizeFloat(z));
 
 	FString json = UJsonParseLib::MakeJson(studentData);
 
@@ -74,11 +78,11 @@ void UBSU_MemoHttpComponent::ReqPostGetAllMemo()
 	FHttpModule& httpModule = FHttpModule::Get();
 	TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
 	req->SetURL(URL);
-	req->SetVerb(TEXT("POST"));
+	req->SetVerb(TEXT("Get"));
 
 	req->SetHeader(TEXT("content-type"), TEXT("application/json"));
 
-	req->OnProcessRequestComplete().BindUObject(this, &UBSU_MemoHttpComponent::OnResPostAttachMemo);
+	req->OnProcessRequestComplete().BindUObject(this, &UBSU_MemoHttpComponent::OnResPostGetAllMemo);
 
 	req->ProcessRequest();
 }

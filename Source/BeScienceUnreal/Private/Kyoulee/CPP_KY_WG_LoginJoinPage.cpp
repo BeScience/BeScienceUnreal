@@ -50,15 +50,19 @@ void UCPP_KY_WG_LoginJoinPage::OnResHttpPostJoinCallBack(FHttpRequestPtr req, FH
 	if (bConnectedSuccessfully)
 	{
 		FString result = res->GetContentAsString();
+		this->HttpResult = result;
 		//	FJsonPlayer playerlist = UIJsonPersePlayer(result);
-		UE_LOG(LogTemp, Warning, TEXT("[POST] player id %s  ??  %d"), *result, res->GetResponseCode());
-		if (res->GetResponseCode() == 200)
-		{
-			//성공 했을때 동작 추가
-			MyNativeEvent();
-		}
+		//UE_LOG(LogTemp, Warning, TEXT("[POST] player id %s  ??  %d"), *this->HttpResult, res->GetResponseCode());
+		this->HttpStatus = res->GetResponseCode();
+		//성공 했을때 동작 blueprint 에서
+		MyNativeEvent();
 	}
 	bHttpWaitresponse = false;
+}
+
+int32 UCPP_KY_WG_LoginJoinPage::HttpStatusValue()
+{
+	return this->HttpStatus;
 }
 
 FString UCPP_KY_WG_LoginJoinPage::JsonStringfyJoinPlayer(FJsonPlayer player)

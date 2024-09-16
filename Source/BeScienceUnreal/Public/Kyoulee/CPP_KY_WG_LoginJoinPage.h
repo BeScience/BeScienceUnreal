@@ -37,6 +37,15 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void MyNativeEvent();
 
+	UPROPERTY(BlueprintReadOnly)
+	int32 HttpStatus;
+	
+	UPROPERTY(BlueprintReadOnly)
+	FString HttpResult;
+
+	UFUNCTION(BlueprintCallable)
+	int32 HttpStatusValue();
+
 public:
 	virtual void NativeConstruct() override;
 

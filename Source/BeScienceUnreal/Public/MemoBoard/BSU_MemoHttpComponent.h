@@ -35,7 +35,7 @@ public:
 	void ReqPostRemoveAllMemo();
 	void OnResPostRemoveAllMemo(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
-	FString URL = TEXT("59.13.225.125:8888/stt-tts-chat");
+	FString URL = TEXT("http://mtvs-museum.duckdns.org:8080/postit");
 
 	class ABSU_MemoBoard* Me;
 };

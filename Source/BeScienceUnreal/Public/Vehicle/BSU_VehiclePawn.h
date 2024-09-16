@@ -146,6 +146,8 @@ public:
 	void SetupOpencv();
 	UFUNCTION(BlueprintImplementableEvent, Category="Vehicle")
 	void TearDownOpencv();
+	UFUNCTION(BlueprintImplementableEvent, Category="Vehicle")
+	void ToggleCharacter(bool isShow);
 
 	/** Returns the front spring arm subobject */
 	FORCEINLINE USpringArmComponent* GetFrontSpringArm() const { return FrontSpringArm; }

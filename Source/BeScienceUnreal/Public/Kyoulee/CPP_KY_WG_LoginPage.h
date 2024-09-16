@@ -51,6 +51,13 @@ public:
 
 	bool bHttpWaitresponse = false;
 
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 HttpStatus;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString HttpResult;
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void MyNativeLoginEvent();
 
