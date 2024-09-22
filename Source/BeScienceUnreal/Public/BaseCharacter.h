@@ -28,7 +28,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	public: 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	class USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -46,6 +46,10 @@ public:
 		UPROPERTY(EditDefaultsOnly, Category = "ch")
 	class UInputAction* ia_Jump;
 
+		UPROPERTY(EditDefaultsOnly)
+	class UInputAction* IA_Dash;
+
+
 		UPROPERTY(EditDefaultsOnly, Category = "ch")
 	class UInputAction* ia_Function;
 
@@ -60,11 +64,23 @@ public:
 	void OnMyActionJump(const FInputActionValue& inputValue);
 	void OnMyActionFunction(const FInputActionValue& inputValue);
 
+	void OnMyActionDashOngoing(const FInputActionValue& Value);
+	void OnMyActionDashCompleted(const FInputActionValue& Value);
+
+
 	UFUNCTION(BlueprintCallable)
 	void CameraMoveMent();
 
 	UFUNCTION(BlueprintCallable)
 	void MoveCamera();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float DashSpeed = 600.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float WalkSpeed = 500.0f;
+
+
 
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

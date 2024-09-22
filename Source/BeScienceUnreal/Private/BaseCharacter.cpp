@@ -11,6 +11,7 @@
 #include "Kyoulee/CPP_KY_PC_GamePlay.h"
 #include "Net/UnrealNetwork.h"
 #include "../BeScienceUnreal.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -83,6 +84,9 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		input->BindAction ( ia_Look , ETriggerEvent::Triggered , this , &ABaseCharacter::OnMyActionLook );
 		input->BindAction ( ia_Jump , ETriggerEvent::Started , this , &ABaseCharacter::OnMyActionJump );
 		input->BindAction(ia_Function, ETriggerEvent::Started, this, &ABaseCharacter::OnMyActionFunction);
+		input->BindAction(IA_Dash, ETriggerEvent::Started, this, &ABaseCharacter::OnMyActionDashOngoing);
+		input->BindAction(IA_Dash, ETriggerEvent::Completed, this, &ABaseCharacter::OnMyActionDashCompleted);
+
 	}
 
 }
@@ -153,6 +157,18 @@ void ABaseCharacter::OnMyActionFunction(const FInputActionValue& inputValue)
 			board->OnInteract();
 		}
 	}
+}
+
+void ABaseCharacter::OnMyActionDashOngoing(const FInputActionValue& Value)
+{
+	GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
+
+}
+
+void ABaseCharacter::OnMyActionDashCompleted(const FInputActionValue& Value)
+{
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+
 }
 
 void ABaseCharacter::CameraMoveMent()
