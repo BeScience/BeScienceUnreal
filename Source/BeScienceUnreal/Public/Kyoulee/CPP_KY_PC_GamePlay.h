@@ -17,6 +17,7 @@ class BESCIENCEUNREAL_API ACPP_KY_PC_GamePlay : public ACPP_KY_PC_Core
 
 private:
 	UCPP_KY_WG_Gameplay_HUD* WBP_Gameplay_HUD;
+	class UQuestWidget* QuestWidget;
 
 public:
 	virtual void BeginPlay () override;
@@ -24,9 +25,14 @@ public:
 	UPROPERTY ( EditDefaultsOnly , BlueprintReadWrite , Category = "WidgetView" )
 	TSubclassOf<UCPP_KY_WG_Gameplay_HUD> WBP_Gameplay_HUD_Class;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WidgetView")
+	TSubclassOf<UQuestWidget> QuestWidget_Class;
 
 	void EnterVehicle(class APawn* vehicle);
 	void ExitVehicle(class APawn* playerCharacter);
+
+	UFUNCTION(BlueprintCallable)
+	void CompleteQuest(int32 QuestIndex);
 
 	// 차량에 탑승했을 때 호출되는 함수
 	
