@@ -47,7 +47,7 @@ void AHttpActor::ReqPostForm(FString ServerURL, FString form, TArray<uint8>& con
 {
 	// 폼 형식으로 전달
 	FHttpModule& httpModule = FHttpModule::Get();
-	httpModule.SetHttpTimeout(360);
+// 	httpModule.SetHttpTimeout(360);
 	TSharedRef<IHttpRequest> req = httpModule.CreateRequest();
 
 	req->SetURL(ServerURL);
@@ -251,15 +251,15 @@ void AHttpActor::ReqPostMessage(FString name, FString Message)
 void AHttpActor::DelegateMessage(FString Name, FString Message)
 {
 
-	UE_LOG(LogTemp, Warning, TEXT("DelegateMessage Name : %s, Message : %s"), *Name, *Message);
-	if (IconIndex == 0)
-	{	
-		MessageWidget->ShowDialogForDuration(Icons[0], Name, Message);
-	}
-	else
-	{
-		MessageWidget->ShowDialogForDuration(Icons[1], Name, Message);
-	}
+// 	UE_LOG(LogTemp, Warning, TEXT("DelegateMessage Name : %s, Message : %s"), *Name, *Message);
+// 	if (IconIndex == 0)
+// 	{	
+// 		MessageWidget->ShowDialogForDuration(Icons[0], Name, Message);
+// 	}
+// 	else
+// 	{
+// 		MessageWidget->ShowDialogForDuration(Icons[1], Name, Message);
+// 	}
 
 }
 

@@ -116,13 +116,13 @@ void ABSU_MemoBoard::DeleteAllMemo()
 
 void ABSU_MemoBoard::OnMemoEdit(const FString& str)
 {
-	EditWidget->RemoveFromViewport();
+// 	EditWidget->RemoveFromViewport();
 	AddMemo(MemoPos, str);
 }
 
 void ABSU_MemoBoard::OnMemoEditEnd()
 {
-	EditWidget->RemoveFromViewport();
+// 	EditWidget->RemoveFromViewport();
 }
 
 void ABSU_MemoBoard::NotifyActorOnClicked(FKey ButtonPressed)
