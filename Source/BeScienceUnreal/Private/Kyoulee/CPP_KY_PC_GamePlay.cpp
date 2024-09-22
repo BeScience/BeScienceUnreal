@@ -3,6 +3,7 @@
 
 #include "Kyoulee/CPP_KY_PC_GamePlay.h"
 #include "Net/UnrealNetwork.h"
+#include "UI/QuestWidget.h"
 #include "BaseCharacter.h"
 
 void ACPP_KY_PC_GamePlay::BeginPlay ()
@@ -16,6 +17,12 @@ void ACPP_KY_PC_GamePlay::BeginPlay ()
 			this->WBP_Gameplay_HUD = CreateWidget<UCPP_KY_WG_Gameplay_HUD> ( this , this->WBP_Gameplay_HUD_Class );
 			this->WBP_Gameplay_HUD->AddToViewport ();
 		}
+
+		if (this->QuestWidget_Class)
+		{
+			this->QuestWidget = CreateWidget<UQuestWidget>(this, this->QuestWidget_Class);
+			this->QuestWidget->AddToViewport();
+		}
 	}
 }
 
@@ -23,6 +30,7 @@ void ACPP_KY_PC_GamePlay::EnterVehicle(class APawn* vehicle)
 {
 	if (IsLocalController())
 	{
+		CompleteQuest(2);
 		ServerPossess(vehicle);
 	}
 }
@@ -33,6 +41,15 @@ void ACPP_KY_PC_GamePlay::ExitVehicle(class APawn* playerCharacter)
 	{
 		ServerPossess(playerCharacter);
 	}
+}
+
+void ACPP_KY_PC_GamePlay::CompleteQuest(int32 QuestIndex)
+{
+	if (IsLocalController())
+	{
+		QuestWidget->CompleteQuest(QuestIndex);
+	}
+
 }
 
 void ACPP_KY_PC_GamePlay::ServerPossess_Implementation(class APawn* possessPawn)

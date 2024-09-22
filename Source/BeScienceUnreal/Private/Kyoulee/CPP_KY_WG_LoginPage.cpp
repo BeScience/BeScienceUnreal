@@ -57,7 +57,7 @@ void UCPP_KY_WG_LoginPage::OnResHttpPostLoginCallBack(FHttpRequestPtr req, FHttp
 		FString result = res->GetContentAsString();
 		this->HttpResult = result;
 		this->HttpStatus = res->GetResponseCode();
-
+		UE_LOG(LogTemp, Display, TEXT(""));
 		if (res->GetResponseCode() == 200)
 		{
 			//성공 했을때 동작 추가
