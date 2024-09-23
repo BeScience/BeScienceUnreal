@@ -26,6 +26,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnInteract();
 	void AddMemo(const FVector& pos, const FString& str);
+	void AddMemoRequest(const FVector& pos, const FString& str);
 	void DeleteAllMemo();
 
 	void OnMemoEdit(const FString& str);

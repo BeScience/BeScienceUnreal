@@ -92,9 +92,6 @@ void ABSU_MemoBoard::AddMemo(const FVector& pos, const FString& str)
 
 	MemoArray.Add(Memo);
 
-	// 서버에 메모 추가
-	MemoHttpComp->AttachMemo(str, pos);
-
 	// 퀘스트 완료
 	// 플레이어 컨트롤러 가져오기
 	ACPP_KY_PC_GamePlay* PC = Cast<ACPP_KY_PC_GamePlay>(GetWorld()->GetFirstPlayerController());
@@ -102,6 +99,12 @@ void ABSU_MemoBoard::AddMemo(const FVector& pos, const FString& str)
 	{
 		PC->CompleteQuest(3);
 	}
+}
+
+void ABSU_MemoBoard::AddMemoRequest(const FVector& pos, const FString& str)
+{
+	// 서버에 메모 추가
+	MemoHttpComp->AttachMemo(str, pos);
 }
 
 void ABSU_MemoBoard::DeleteAllMemo()
@@ -118,6 +121,7 @@ void ABSU_MemoBoard::OnMemoEdit(const FString& str)
 {
 // 	EditWidget->RemoveFromViewport();
 	AddMemo(MemoPos, str);
+	AddMemoRequest(MemoPos, str);
 }
 
 void ABSU_MemoBoard::OnMemoEditEnd()
