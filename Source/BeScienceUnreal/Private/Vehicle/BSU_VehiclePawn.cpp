@@ -120,7 +120,7 @@ ABSU_VehiclePawn::ABSU_VehiclePawn()
 	// Set up the steering
 	// NOTE: Check the Blueprint asset for the Steering Curve
 	GetChaosVehicleMovement()->SteeringSetup.SteeringType = ESteeringType::Ackermann;
-	GetChaosVehicleMovement()->SteeringSetup.AngleRatio = 0.7f;
+	GetChaosVehicleMovement()->SteeringSetup.AngleRatio = 1.0f;
 }
 
 void ABSU_VehiclePawn::BeginPlay()
