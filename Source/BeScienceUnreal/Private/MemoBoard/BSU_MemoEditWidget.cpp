@@ -17,6 +17,7 @@ void UBSU_MemoEditWidget::OnAttachMemo()
 {
 	FString memo = MemoEditTextBox->GetText().ToString();
 	// 위젯 숨김
+	RemoveFromParent();
 	if (OnAttachMemoDelegate.IsBound())
 		OnAttachMemoDelegate.Execute(memo);
 }
