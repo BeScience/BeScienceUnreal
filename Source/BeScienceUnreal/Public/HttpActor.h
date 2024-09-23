@@ -55,7 +55,7 @@ public:
 	TArray<UTexture2D*> Icons;
 
 
-	FString URL = TEXT("http://59.13.225.125:8000/chat");
+	FString URL = TEXT("http://59.13.225.125:8888/stt-tts-chat");
 // 	FString URL = TEXT("http://183.109.66.119:8000/stt-tts-chat");
 	FString Key = TEXT("/");
 
