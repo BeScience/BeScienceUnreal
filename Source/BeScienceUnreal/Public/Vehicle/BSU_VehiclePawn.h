@@ -93,7 +93,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* ExitVehicleAction;
 
-
 	/** Keeps track of which camera is active */
 	bool bFrontCameraActive = false;
 
