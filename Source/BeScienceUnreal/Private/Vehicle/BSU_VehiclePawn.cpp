@@ -18,6 +18,7 @@
 #include "Runtime/Engine/public/EngineUtils.h"
 #include "Kyoulee/CPP_KY_PC_GamePlay.h"
 #include "../../BeScienceUnreal.h"
+#include "Vehicle/BSU_Star.h"
 
 ABSU_VehiclePawn::ABSU_VehiclePawn()
 {
@@ -121,12 +122,13 @@ ABSU_VehiclePawn::ABSU_VehiclePawn()
 	// NOTE: Check the Blueprint asset for the Steering Curve
 	GetChaosVehicleMovement()->SteeringSetup.SteeringType = ESteeringType::Ackermann;
 	GetChaosVehicleMovement()->SteeringSetup.AngleRatio = 1.0f;
+
+	BoxComp->OnComponentBeginOverlap.AddDynamic(this, &ABSU_VehiclePawn::OnBoxBeginOverlap);
 }
 
 void ABSU_VehiclePawn::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -367,6 +369,36 @@ void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
 			}
 		}
 	}
+}
+
+void ABSU_VehiclePawn::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// 로그 출력
+	ABSU_Star* star = Cast<ABSU_Star>(OtherActor);
+	if (star)
+	{
+		if (star->bTargeted)
+		{
+			// 차량 폭파시킨다.
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("OnBoxBeginOverlap"));
+			star->bTargeted = true;
+			if (ConnectedStars.Num() > 0)
+			{
+				star->SetTarget(ConnectedStars.Last());
+			}
+			else
+			{
+				star->SetTarget(this);
+			}
+
+			// 가장 마지막 스타를 타겟으로 한다.
+			ConnectedStars.Add(star);
+		}
+	}
+
 }
 
 void ABSU_VehiclePawn::PrintNetLog()
