@@ -48,6 +48,14 @@ void ACPP_KY_PC_GamePlay::CompleteQuest(int32 QuestIndex)
 	if (IsLocalController())
 	{
 		QuestWidget->CompleteQuest(QuestIndex);
+		completed[QuestIndex] = true;
+		bool bCheck = true;
+		for (auto b : completed){
+			if (!b){
+				bCheck = false;
+			}
+		}
+			CompleteAll();
 	}
 
 }

@@ -41,4 +41,9 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPossess(class APawn* possessPawn);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	bool CompleteAll();
+
+	bool completed[4];
 };
