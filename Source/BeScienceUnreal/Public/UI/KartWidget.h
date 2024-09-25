@@ -17,6 +17,8 @@ class BESCIENCEUNREAL_API UKartWidget : public UUserWidget
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* StartText;
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* GameTimeText;
 
 	// UI 애니메이션
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
@@ -29,7 +31,7 @@ protected:
 	class UWidgetAnimation* Win;
 
 public:
-
+	void SetGameTime(int32 Time);
 	void ShowStartText(bool value);
 	void ShowPlayGame();
 	void ShowWin();

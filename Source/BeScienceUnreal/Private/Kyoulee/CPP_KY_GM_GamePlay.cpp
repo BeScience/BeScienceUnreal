@@ -10,6 +10,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "EngineUtils.h"
+#include "Kyoulee/CPP_KY_GS_GamePlay.h"
 
 void ACPP_KY_GM_GamePlay::TeleportAllPlayersToSpawn()
 {
@@ -45,14 +46,51 @@ void ACPP_KY_GM_GamePlay::TeleportAllPlayersToSpawn()
         {
             APawn* pawn = PlayerController->GetPawn();
             // FoundLocKarts[i]; 위치로 이동시킨다.
+            // pawn의 각속도와 속도를 0으로 만듬.
+            pawn->GetMovementComponent()->Velocity = FVector::ZeroVector;
+
             if (i < FoundLocKarts.Num())
             {
                 pawn->SetActorLocation(FoundLocKarts[i]->GetActorLocation(), false, NULL, ETeleportType::TeleportPhysics);
                 pawn->SetActorRotation(FoundLocKarts[i]->GetActorRotation(), ETeleportType::TeleportPhysics);
+                i++;
             }
-            
-            // pawn의 각속도와 속도를 0으로 만듬.
-            pawn->GetMovementComponent()->Velocity = FVector::ZeroVector;
         }
     }
+}
+
+void ACPP_KY_GM_GamePlay::StartGame()
+{
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle_UpdateGameTime, this, &ACPP_KY_GM_GamePlay::UpdateGameTime, 1.0f, true);
+
+    GameTime = GameTimeLimit;
+}
+
+void ACPP_KY_GM_GamePlay::EndGame()
+{
+    // 타이머 지우기
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_UpdateGameTime);
+
+    // 모든 플레이어에게 결과창을 띄운다.
+
+    ACPP_KY_GS_GamePlay* GamePlayState = GetGameState<ACPP_KY_GS_GamePlay>();
+    if (GamePlayState)
+    {
+        GamePlayState->MulticastShowResultScreen();
+    }
+}
+
+void ACPP_KY_GM_GamePlay::UpdateGameTime()
+{
+	GameTime--;
+	if (GameTime <= 0)
+	{
+		EndGame();
+	}
+
+	ACPP_KY_GS_GamePlay* GamePlayState = GetGameState<ACPP_KY_GS_GamePlay>();
+	if (GamePlayState)
+	{
+		GamePlayState->UpdateGameElapsedTime(GameTime);
+	}
 }

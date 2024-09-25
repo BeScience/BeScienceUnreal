@@ -19,4 +19,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GamePlay")
 	void TeleportAllPlayersToSpawn();
 
+	FTimerHandle TimerHandle_UpdateGameTime;
+	int32 GameTime;
+	int32 GameTimeLimit = 80;
+	void StartGame();
+
+	void EndGame();
+	void UpdateGameTime();
 };

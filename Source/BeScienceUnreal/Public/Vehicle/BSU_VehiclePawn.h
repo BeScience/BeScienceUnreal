@@ -185,4 +185,9 @@ public:
 	class ACPP_KY_GS_GamePlay* GameState;
 	void PrintNetLog();
 	void StartGame();
+	void ResultGame(bool bWin);
+
+	void SetTimer(int32 GameTime);
+
+	float ThrottleInput = 0.5f;
 };

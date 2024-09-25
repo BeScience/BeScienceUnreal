@@ -152,6 +152,7 @@ void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			subSys->AddMappingContext(IMC_Player, 1);
 		}
 
+		ThrottleInput = 0.5f;
 		// 위젯 설치
 		KartWidget = CreateWidget<UKartWidget>(GetWorld(), KartWidgetFactory);
 		// 위젯을 화면에 표시
@@ -219,7 +220,7 @@ void ABSU_VehiclePawn::Tick(float Delta)
 	if (LocalPlayerController != nullptr)
 	{
 		if (LocalPlayerController->GetPawn() == this)
-			ChaosVehicleMovement->SetThrottleInput(0.5f);
+			ChaosVehicleMovement->SetThrottleInput(ThrottleInput);
 	}
 
 	PrintNetLog();
@@ -379,7 +380,7 @@ void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
 					}
 
 					TearDownOpencv();
-					KartWidget->RemoveFromViewport();
+					KartWidget->RemoveFromParent();
 					break;
 				}
 			}
@@ -398,23 +399,49 @@ void ABSU_VehiclePawn::PlayGame(const FInputActionValue& Value)
 		// State 변경
 		// 각 유저 차량 위치 변경
 		KartWidget->ShowPlayGame();
-
+		ThrottleInput = 0.0f;
 		// 게임스테이트 가져오기
-		if (GameState) GameState = GetWorld()->GetGameState<ACPP_KY_GS_GamePlay>();
+		if (nullptr == GameState) GameState = GetWorld()->GetGameState<ACPP_KY_GS_GamePlay>();
 		// 게임스테이트에게 게임 시작을 알린다.
 		if (GameState)
 			GameState->SetGamePlayState(EGamePlayState::EReady);
 
+		// 게임모드를 가져온다.
+		AGameModeBase* gamMode = UGameplayStatics::GetGameMode(GetWorld());
+		ACPP_KY_GM_GamePlay* gm = Cast<ACPP_KY_GM_GamePlay>(gamMode);
+		if (gm)
+			gm->TeleportAllPlayersToSpawn();
 	}
 }
 
 void ABSU_VehiclePawn::StartGame()
 {
-	// 게임모드를 가져온다.
-	AGameModeBase* gamMode = UGameplayStatics::GetGameMode(GetWorld());
-	ACPP_KY_GM_GamePlay* gm = Cast<ACPP_KY_GM_GamePlay>(gamMode);
-	if (gm)
-		gm->TeleportAllPlayersToSpawn();
+	ThrottleInput = 0.5f;
+	if (HasAuthority())
+	{
+		// 카운트 시작
+		AGameModeBase* gamMode = UGameplayStatics::GetGameMode(GetWorld());
+		ACPP_KY_GM_GamePlay* gm = Cast<ACPP_KY_GM_GamePlay>(gamMode);
+		if (gm)
+			gm->StartGame();
+	}
+}
+
+void ABSU_VehiclePawn::ResultGame(bool bWin)
+{
+	if (bWin)
+	{
+		KartWidget->ShowWin();
+	}
+	else
+	{
+		KartWidget->ShowLose();
+	}
+}
+
+void ABSU_VehiclePawn::SetTimer(int32 GameTime)
+{
+	KartWidget->SetGameTime(GameTime);
 }
 
 void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

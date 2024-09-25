@@ -31,6 +31,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GameState")
 	void SetGamePlayState(EGamePlayState NewGamePlayState);
 
+	
+    UPROPERTY(ReplicatedUsing = OnRep_GameElapsedTime, BlueprintReadOnly, Category = "Game Time")
+    int32 GameElapsedTime;
+	
+    UFUNCTION()
+    void OnRep_GameElapsedTime();
+
+	void UpdateGameElapsedTime(int32 GameTime);
+
+	
+    UFUNCTION(NetMulticast, Reliable)
+    void MulticastShowResultScreen();
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
