@@ -92,6 +92,11 @@ protected:
 	/** Exit Vehicle Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* ExitVehicleAction;
+	
+	/** PlayGame Vehicle Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* PlayGameAction;
+
 
 	/** Keeps track of which camera is active */
 	bool bFrontCameraActive = false;
@@ -135,6 +140,8 @@ protected:
 	/** Handles exit vehicle input */
 	void ExitVehicle(const FInputActionValue& Value);
 
+	void PlayGame(const FInputActionValue& Value);
+
 	/** Called when the brake lights are turned on or off */
 	UFUNCTION(BlueprintImplementableEvent, Category="Vehicle")
 	void BrakeLights(bool bBraking);
@@ -159,11 +166,23 @@ public:
 	/** Returns the cast Chaos Vehicle Movement subobject */
 	FORCEINLINE const TObjectPtr<UChaosWheeledVehicleMovementComponent>& GetChaosVehicleMovement() const { return ChaosVehicleMovement; }
 
-
+	/**
+	 * FComponentBeginOverlapSignature, 
+	 */
 	UFUNCTION()
-	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	TArray<class ABSU_Star*> ConnectedStars;
 
+	// 위젯
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<class UKartWidget> KartWidgetFactory;
+
+	UPROPERTY()
+	class UKartWidget* KartWidget;
+
+	UPROPERTY()
+	class ACPP_KY_GS_GamePlay* GameState;
 	void PrintNetLog();
+	void StartGame();
 };

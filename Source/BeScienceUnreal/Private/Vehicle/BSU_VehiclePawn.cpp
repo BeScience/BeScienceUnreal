@@ -19,6 +19,10 @@
 #include "Kyoulee/CPP_KY_PC_GamePlay.h"
 #include "../../BeScienceUnreal.h"
 #include "Vehicle/BSU_Star.h"
+#include "UI/KartWidget.h"
+#include "Kyoulee/CPP_KY_GS_GamePlay.h"
+#include "Kyoulee/CPP_KY_GM_GamePlay.h"
+#include "Kismet/GameplayStatics.h"
 
 ABSU_VehiclePawn::ABSU_VehiclePawn()
 {
@@ -123,12 +127,12 @@ ABSU_VehiclePawn::ABSU_VehiclePawn()
 	GetChaosVehicleMovement()->SteeringSetup.SteeringType = ESteeringType::Ackermann;
 	GetChaosVehicleMovement()->SteeringSetup.AngleRatio = 1.0f;
 
-	BoxComp->OnComponentBeginOverlap.AddDynamic(this, &ABSU_VehiclePawn::OnBoxBeginOverlap);
 }
 
 void ABSU_VehiclePawn::BeginPlay()
 {
 	Super::BeginPlay();
+	BoxComp->OnComponentBeginOverlap.AddDynamic(this, &ABSU_VehiclePawn::OnMyBoxBeginOverlap);
 }
 
 void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -147,7 +151,16 @@ void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		{
 			subSys->AddMappingContext(IMC_Player, 1);
 		}
+
+		// 위젯 설치
+		KartWidget = CreateWidget<UKartWidget>(GetWorld(), KartWidgetFactory);
+		// 위젯을 화면에 표시
+		if (KartWidget != nullptr)
+		{
+			KartWidget->AddToViewport();
+		}
 	}
+
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		// steering 
@@ -178,6 +191,9 @@ void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		// exit the vehicle
 		EnhancedInputComponent->BindAction(ExitVehicleAction, ETriggerEvent::Triggered, this, &ABSU_VehiclePawn::ExitVehicle);
+
+		// play the game
+		EnhancedInputComponent->BindAction(PlayGameAction, ETriggerEvent::Triggered, this, &ABSU_VehiclePawn::PlayGame);
 	}
 	else
 	{
@@ -363,7 +379,7 @@ void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
 					}
 
 					TearDownOpencv();
-
+					KartWidget->RemoveFromViewport();
 					break;
 				}
 			}
@@ -371,9 +387,38 @@ void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
 	}
 }
 
-void ABSU_VehiclePawn::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ABSU_VehiclePawn::PlayGame(const FInputActionValue& Value)
 {
-	// 로그 출력
+	// 방장일 경우
+	if (HasAuthority())
+	{
+		KartWidget->ShowStartText(false);
+
+		// 서버로 전달.
+		// State 변경
+		// 각 유저 차량 위치 변경
+		KartWidget->ShowPlayGame();
+
+		// 게임스테이트 가져오기
+		if (GameState) GameState = GetWorld()->GetGameState<ACPP_KY_GS_GamePlay>();
+		// 게임스테이트에게 게임 시작을 알린다.
+		if (GameState)
+			GameState->SetGamePlayState(EGamePlayState::EReady);
+
+	}
+}
+
+void ABSU_VehiclePawn::StartGame()
+{
+	// 게임모드를 가져온다.
+	AGameModeBase* gamMode = UGameplayStatics::GetGameMode(GetWorld());
+	ACPP_KY_GM_GamePlay* gm = Cast<ACPP_KY_GM_GamePlay>(gamMode);
+	if (gm)
+		gm->TeleportAllPlayersToSpawn();
+}
+
+void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{	// 로그 출력
 	ABSU_Star* star = Cast<ABSU_Star>(OtherActor);
 	if (star)
 	{
@@ -384,7 +429,6 @@ void ABSU_VehiclePawn::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AA
 		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("OnBoxBeginOverlap"));
-			star->bTargeted = true;
 			if (ConnectedStars.Num() > 0)
 			{
 				star->SetTarget(ConnectedStars.Last());
@@ -398,7 +442,6 @@ void ABSU_VehiclePawn::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AA
 			ConnectedStars.Add(star);
 		}
 	}
-
 }
 
 void ABSU_VehiclePawn::PrintNetLog()

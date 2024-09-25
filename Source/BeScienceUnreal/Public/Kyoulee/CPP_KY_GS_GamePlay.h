@@ -33,4 +33,10 @@ public:
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	FTimerHandle GameStartTimer;
+
+	UFUNCTION()
+	void StartGame();
+
 };

@@ -32,10 +32,13 @@ void ABSU_Star::Tick(float DeltaTime)
 	if (TargetActor)
 	{
 		// 타겟과의 거리
-		if (FVector::Dist(TargetActor->GetActorLocation(), GetActorLocation()) > 100)
+		if (FVector::Dist(TargetActor->GetActorLocation(), GetActorLocation()) > 200)
 		{
-			FVector dir = TargetActor->GetActorLocation() - GetActorLocation();
-			FVector p = GetActorLocation() + Speed * dir * DeltaTime;
+			FVector TargetLoc = TargetActor->GetActorLocation();
+			FVector dir = TargetLoc - GetActorLocation();
+			dir.Normalize();
+			FVector p0 = GetActorLocation();
+			FVector p =  p0 + Speed * dir * DeltaTime;
 			SetActorLocation(p);
 		}
 	}
@@ -44,5 +47,6 @@ void ABSU_Star::Tick(float DeltaTime)
 void ABSU_Star::SetTarget(AActor* NewTargetActor)
 {
 	TargetActor = NewTargetActor;
+	bTargeted = true;
 }
 

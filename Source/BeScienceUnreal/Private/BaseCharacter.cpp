@@ -125,28 +125,7 @@ void ABaseCharacter::OnMyActionFunction(const FInputActionValue& inputValue)
 	for (AActor* Actor : OverlappingActors)
 	{
 		ABSU_VehiclePawn* pawn = Cast<ABSU_VehiclePawn>(Actor);
-		if (pawn)
-		{
-			// possess
-			APlayerController* pc = GetWorld()->GetFirstPlayerController();
-			if (pc)
-			{
-				UEnhancedInputLocalPlayerSubsystem* subSys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
-				if (subSys)
-				{
-					subSys->RemoveMappingContext(pawn->IMC_Player);
-				}
-
-				ServerSetHidden(true);
-				ACPP_KY_PC_GamePlay* pcgp = Cast<ACPP_KY_PC_GamePlay>(pc);
-				if (pcgp)
-				{
-					pcgp->EnterVehicle(pawn);
-				}
-
-				pawn->SetupOpencv();
-			}
-		}
+		RideVehicle(pawn);
 
 		ABSU_MemoBoard* board = Cast<ABSU_MemoBoard>(Actor);
 		if (board)
@@ -213,6 +192,38 @@ void ABaseCharacter::SetHidden(bool bPlayerHidden)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SetHidden"));
 	// 클라이언트에서 상태를 설정하고 이를 서버로 전파
 	ServerSetHidden(bPlayerHidden);
+}
+
+void ABaseCharacter::ServerRideVehicle_Implementation(ABSU_VehiclePawn* pawn)
+{
+	// RideVehicle();
+
+}
+
+void ABaseCharacter::RideVehicle(ABSU_VehiclePawn* pawn)
+{
+	if (pawn)
+	{
+		// possess
+		APlayerController* pc = GetWorld()->GetFirstPlayerController();
+		if (pc)
+		{
+			UEnhancedInputLocalPlayerSubsystem* subSys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
+			if (subSys)
+			{
+				subSys->RemoveMappingContext(pawn->IMC_Player);
+			}
+
+			ServerSetHidden(true);
+			ACPP_KY_PC_GamePlay* pcgp = Cast<ACPP_KY_PC_GamePlay>(pc);
+			if (pcgp)
+			{
+				pcgp->EnterVehicle(pawn);
+			}
+
+			pawn->SetupOpencv();
+		}
+	}
 }
 
 void ABaseCharacter::PrintNetLog()
