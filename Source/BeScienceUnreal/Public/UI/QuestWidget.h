@@ -31,4 +31,7 @@ public:
 	class UImage* QuestComplete3;
 
 	void CompleteQuest(int32 QuestIndex);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void EndQuest();
 };
