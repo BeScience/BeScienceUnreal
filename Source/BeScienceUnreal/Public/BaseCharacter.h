@@ -97,5 +97,10 @@ public:
 
 	void SetHidden(bool bPlayerHidden);
 
+	// 서버에서 숨김 상태를 설정하는 함수
+	UFUNCTION(Server, Reliable)
+	void ServerRideVehicle(ABSU_VehiclePawn* pawn);
+	void RideVehicle(ABSU_VehiclePawn* pawn);
+
 	void PrintNetLog();
 };
