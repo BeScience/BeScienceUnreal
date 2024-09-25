@@ -41,4 +41,6 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPossess(class APawn* possessPawn);
+
+	bool completed[4];
 };
