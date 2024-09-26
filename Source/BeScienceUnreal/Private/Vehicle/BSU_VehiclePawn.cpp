@@ -444,19 +444,32 @@ void ABSU_VehiclePawn::ClientReadyGame()
 
 void ABSU_VehiclePawn::ResultGame(bool bWin)
 {
-	if (bWin)
+	// 자신의 마인을 모두 제거한다.
+	for (auto& ConnectedMine : ConnectedMines)
 	{
-		KartWidget->ShowWin();
+		ConnectedMine->Destroy();
 	}
-	else
+
+	ConnectedMines.Empty();
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController->IsLocalController() && KartWidget)
 	{
-		KartWidget->ShowLose();
+		if (bWin)
+		{
+			KartWidget->ShowWin();
+		}
+		else
+		{
+			KartWidget->ShowLose();
+		}
 	}
 }
 
 void ABSU_VehiclePawn::SetTimer(int32 GameTime)
 {
-	KartWidget->SetGameTime(GameTime);
+	if (KartWidget)
+		KartWidget->SetGameTime(GameTime);
 }
 
 void ABSU_VehiclePawn::ShrinkBox()
@@ -474,23 +487,42 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 			UE_LOG(LogTemp, Warning, TEXT("OnBoxBeginOverlap"));
 			
 			// mine생성
-			ABSU_Mine* NewMine = GetWorld()->SpawnActor<ABSU_Mine>(MineFactory, GetActorLocation(), FRotator::ZeroRotator);
-			NewMine->SetTarget(this);
+			ABSU_Mine* NewMine;
+			
+			if (IsLocallyControlled())
+			{
+				NewMine = GetWorld()->SpawnActor<ABSU_Mine>(MineFactory, GetActorLocation(), FRotator::ZeroRotator);
+
+			}
+			else
+			{
+				NewMine = GetWorld()->SpawnActor<ABSU_Mine>(EnemyMineFactory, GetActorLocation(), FRotator::ZeroRotator);
+			}
+
+			NewMine->SetTarget(this, GetController());
 			if (ConnectedMines.Num() > 0)
 			{
-				ConnectedMines[0]->SetTarget(NewMine);
+				ConnectedMines[0]->SetTarget(NewMine, GetController());
 			}
 
 			star->SetTarget(this);
 			ConnectedMines.EmplaceAt(0, NewMine);
-			// 가장 마지막 스타를 타겟으로 한다.
 		}
 	}
 
 	ABSU_Mine* mine = Cast<ABSU_Mine>(OtherActor);
-	if (mine)
+	if (mine && mine->GenTime > 1)
 	{
+		if (mine->TargetController != GetController())
+		{
+			// 자신의 마인을 모두 제거한다.
+			for (auto& ConnectedMine : ConnectedMines)
+			{
+				ConnectedMine->Destroy();
+			}
 
+			ConnectedMines.Empty();
+		}
 	}
 
 	ABSU_Magnet* magnet = Cast<ABSU_Magnet>(OtherActor);

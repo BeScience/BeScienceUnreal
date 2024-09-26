@@ -176,6 +176,8 @@ public:
 	TArray<class ABSU_Mine*> ConnectedMines;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<class ABSU_Mine> MineFactory;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<class ABSU_Mine> EnemyMineFactory;
 	UPROPERTY()
 	class ABSU_Mine* Mine;
 

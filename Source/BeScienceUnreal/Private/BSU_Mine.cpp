@@ -21,14 +21,14 @@ ABSU_Mine::ABSU_Mine()
 void ABSU_Mine::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	GenTime = 0;
 }
 
 // Called every frame
 void ABSU_Mine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	GenTime += DeltaTime;
 	// 타겟 Actor가 있으면 따라간다.
 	if (TargetActor)
 	{
@@ -45,9 +45,10 @@ void ABSU_Mine::Tick(float DeltaTime)
 	}
 }
 
-void ABSU_Mine::SetTarget(AActor* NewTargetActor)
+void ABSU_Mine::SetTarget(AActor* NewTargetActor, AController* target)
 {
 	TargetActor = NewTargetActor;
 	bTargeted = true;
+	TargetController = target;
 }
 

@@ -5,6 +5,10 @@
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/PlayerController.h"
 #include "Vehicle/BSU_VehiclePawn.h"
+#include "BSU_Mine.h"
+#include "Vehicle/BSU_Magnet.h"
+#include "EngineUtils.h"
+#include <Vehicle/BSU_Star.h>
 
 void ACPP_KY_GS_GamePlay::SetGamePlayState(EGamePlayState NewGamePlayState)
 {
@@ -99,7 +103,7 @@ void ACPP_KY_GS_GamePlay::MulticastEndGame_Implementation()
     for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
     {
         APlayerController* PlayerController = Iterator->Get();
-        if (PlayerController && PlayerController->IsLocalController())
+        if (PlayerController)
         {
             // 여기서 결과 화면 UI를 표시하는 로직을 구현합니다 (예: UMG 위젯 표시)
             // PlayerController->ClientMessage(TEXT("게임이 종료되었습니다! 결과 화면을 표시합니다."));
@@ -110,6 +114,27 @@ void ACPP_KY_GS_GamePlay::MulticastEndGame_Implementation()
                 Vehicle->ResultGame(true);
             }
         }
+    }
+
+    // ABSU_Mine을 모두 제거
+    for (TActorIterator<ABSU_Star> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+    {
+        ABSU_Star* Mine = *ActorItr;
+        Mine->Destroy();
+    }
+
+    //// ABSU_Mine을 모두 제거
+    //for (TActorIterator<ABSU_Mine> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+    //{
+    //    ABSU_Mine* Mine = *ActorItr;
+    //    Mine->Destroy();
+    //}
+
+    // ABSU_Magnet 모두제거
+    for (TActorIterator<ABSU_Magnet> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+    {
+        ABSU_Magnet* Magnet = *ActorItr;
+        Magnet->Destroy();
     }
 }
 

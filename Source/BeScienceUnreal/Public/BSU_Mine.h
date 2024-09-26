@@ -39,7 +39,11 @@ public:
 	float Speed = 1500;
 
 public:
-	void SetTarget(AActor* NewTargetActor);
+	void SetTarget(AActor* NewTargetActor, AController* target);
 
 	bool bTargeted = false;
+	
+	AController * TargetController;
+
+	float GenTime = 0;
 };
