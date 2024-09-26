@@ -90,7 +90,6 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	}
 
 }
-
 void ABaseCharacter::OnMyActionMove ( const FInputActionValue& inputValue )
 {
 

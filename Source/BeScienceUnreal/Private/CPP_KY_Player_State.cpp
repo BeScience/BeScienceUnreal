@@ -1,4 +1,4 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Kyoulee/CPP_KY_GS_Core.h"
+#include "CPP_KY_Player_State.h"
