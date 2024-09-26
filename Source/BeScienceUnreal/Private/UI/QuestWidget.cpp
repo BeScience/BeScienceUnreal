@@ -34,7 +34,7 @@ void UQuestWidget::CompleteQuest(int32 QuestIndex)
 	if (QuestComplete0->GetVisibility() == ESlateVisibility::Visible &&
 		QuestComplete1->GetVisibility() == ESlateVisibility::Visible &&
 		QuestComplete2->GetVisibility() == ESlateVisibility::Visible &&
-		QuestComplete0->GetVisibility() == ESlateVisibility::Visible)
+		QuestComplete3->GetVisibility() == ESlateVisibility::Visible)
 	{
 		this->EndQuest();
 	}
