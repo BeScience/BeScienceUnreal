@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
-#include "CPP_KY_GS_Core.generated.h"
+#include "GameFramework/PlayerState.h"
+#include "CPP_KY_Player_State.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BESCIENCEUNREAL_API ACPP_KY_GS_Core : public AGameStateBase
+class BESCIENCEUNREAL_API ACPP_KY_Player_State : public APlayerState
 {
 	GENERATED_BODY()
 
