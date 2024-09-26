@@ -36,6 +36,9 @@ protected:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	class UWidgetAnimation* Win;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	class USoundBase* StartSound;
+
 public:
 	void SetGameTime(int32 Time);
 	void ShowStartText(bool value);
