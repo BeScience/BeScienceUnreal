@@ -15,6 +15,12 @@ class BESCIENCEUNREAL_API UKartWidget : public UUserWidget
 	GENERATED_BODY()
 	
 protected:
+	// 상대방 플레이어들의 이름을 우측에 나열하고 싶다.
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	class UTextBlock* txt_users;
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* StartText;
 	UPROPERTY(meta = (BindWidget))

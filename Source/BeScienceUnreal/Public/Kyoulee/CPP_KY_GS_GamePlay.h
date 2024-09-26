@@ -55,4 +55,7 @@ protected:
 	UFUNCTION()
 	void StartGame();
 
+	APlayerState* GetWinnerPlayerState();
+
+
 };

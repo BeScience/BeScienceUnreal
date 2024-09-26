@@ -9,6 +9,7 @@
 #include "Vehicle/BSU_Magnet.h"
 #include "EngineUtils.h"
 #include <Vehicle/BSU_Star.h>
+#include "GameFramework/PlayerState.h"
 
 void ACPP_KY_GS_GamePlay::SetGamePlayState(EGamePlayState NewGamePlayState)
 {
@@ -100,18 +101,25 @@ void ACPP_KY_GS_GamePlay::MulticastStartGame_Implementation()
 
 void ACPP_KY_GS_GamePlay::MulticastEndGame_Implementation()
 {
+    APlayerState* WinnerPlayerState = GetWinnerPlayerState();
+
     for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
     {
         APlayerController* PlayerController = Iterator->Get();
         if (PlayerController)
         {
-            // 여기서 결과 화면 UI를 표시하는 로직을 구현합니다 (예: UMG 위젯 표시)
-            // PlayerController->ClientMessage(TEXT("게임이 종료되었습니다! 결과 화면을 표시합니다."));
-
             ABSU_VehiclePawn* Vehicle = Cast<ABSU_VehiclePawn>(PlayerController->GetPawn());
             if (Vehicle)
             {
-                Vehicle->ResultGame(true);
+                APlayerState* state = Vehicle->GetPlayerState();
+                if (WinnerPlayerState == state)
+                {
+                    Vehicle->ResultGame(true);
+                }
+                else
+                {
+    				Vehicle->ResultGame(false);
+                }
             }
         }
     }
@@ -149,4 +157,23 @@ void ACPP_KY_GS_GamePlay::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void ACPP_KY_GS_GamePlay::StartGame()
 {
 	SetGamePlayState(EGamePlayState::EPlaying);
+}
+
+APlayerState* ACPP_KY_GS_GamePlay::GetWinnerPlayerState()
+{
+    APlayerState* WinnerPlayerState = nullptr;
+    float HighestScore = -1.0f;
+
+    // 모든 플레이어의 PlayerState를 확인
+    for (APlayerState* PlayerState : PlayerArray)
+    {
+        if (PlayerState && PlayerState->GetScore() > HighestScore)
+        {
+            // 현재 플레이어의 스코어가 가장 높은 경우 업데이트
+            HighestScore = PlayerState->GetScore();
+            WinnerPlayerState = PlayerState;
+        }
+    }
+
+	return WinnerPlayerState;
 }

@@ -14,6 +14,7 @@
 #include "Vehicle/BSU_MineManager.h"
 #include "BSU_Mine.h"
 #include "Vehicle/BSU_Magnet.h"
+#include "Components/SkeletalMeshComponent.h"
 
 void ACPP_KY_GM_GamePlay::BeginPlay()
 {
@@ -59,6 +60,12 @@ void ACPP_KY_GM_GamePlay::TeleportAllPlayersToSpawn()
             // FoundLocKarts[i]; 위치로 이동시킨다.
             // pawn의 각속도와 속도를 0으로 만듬.
             pawn->GetMovementComponent()->Velocity = FVector::ZeroVector;
+            ABSU_VehiclePawn* vehicle = Cast<ABSU_VehiclePawn>(pawn);
+            if (vehicle)
+            {
+                USkeletalMeshComponent* vehicleMesh = vehicle->GetMesh();
+                vehicleMesh->SetSimulatePhysics(false);
+            }
 
             if (i < FoundLocKarts.Num())
             {

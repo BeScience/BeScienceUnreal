@@ -25,6 +25,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BSU_Mine.h"
 #include "Vehicle/BSU_Magnet.h"
+#include "GameFramework/PlayerState.h"
 
 ABSU_VehiclePawn::ABSU_VehiclePawn()
 {
@@ -156,11 +157,14 @@ void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		ThrottleInput = 0.5f;
 		// 위젯 설치
-		KartWidget = CreateWidget<UKartWidget>(GetWorld(), KartWidgetFactory);
-		// 위젯을 화면에 표시
-		if (KartWidget != nullptr)
+		if (IsLocallyControlled())
 		{
-			KartWidget->AddToViewport();
+			KartWidget = CreateWidget<UKartWidget>(GetWorld(), KartWidgetFactory);
+			// 위젯을 화면에 표시
+			if (KartWidget != nullptr)
+			{
+				KartWidget->AddToViewport();
+			}
 		}
 	}
 
@@ -382,7 +386,8 @@ void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
 					}
 
 					TearDownOpencv();
-					KartWidget->RemoveFromParent();
+					if (KartWidget)
+						KartWidget->RemoveFromParent();
 					break;
 				}
 			}
@@ -413,6 +418,9 @@ void ABSU_VehiclePawn::ReadyGame(const FInputActionValue& Value)
 
 void ABSU_VehiclePawn::StartGame()
 {
+	USkeletalMeshComponent* vehicleMesh = GetMesh();
+	vehicleMesh->SetSimulatePhysics(true);
+
 	ThrottleInput = 0.5f;
 	if (HasAuthority())
 	{
@@ -432,11 +440,15 @@ void ABSU_VehiclePawn::StartGame()
 
 void ABSU_VehiclePawn::ClientReadyGame()
 {
-	KartWidget->ShowStartText(false);
+	if (IsLocallyControlled())
+	{
+		KartWidget->ShowStartText(false);
 
-	// State 변경
-	// 각 유저 차량 위치 변경
-	KartWidget->ShowPlayGame();
+		// State 변경
+		// 각 유저 차량 위치 변경
+		KartWidget->ShowPlayGame();
+	}
+
 	ThrottleInput = 0.0f;
 	// 게임스테이트 가져오기
 	if (nullptr == GameState) GameState = GetWorld()->GetGameState<ACPP_KY_GS_GamePlay>();
@@ -464,6 +476,12 @@ void ABSU_VehiclePawn::ResultGame(bool bWin)
 			KartWidget->ShowLose();
 		}
 	}
+
+	if (HasAuthority())
+	{
+		auto* ps = GetPlayerState();
+		ps->SetScore(0);
+	}
 }
 
 void ABSU_VehiclePawn::SetTimer(int32 GameTime)
@@ -478,7 +496,12 @@ void ABSU_VehiclePawn::ShrinkBox()
 }
 
 void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{	// 로그 출력
+{	
+	// possess가 안된 상태라면 넘긴다.
+	if (GetController() == nullptr) return;
+
+	// 로그 출력
+
 	ABSU_Star* star = Cast<ABSU_Star>(OtherActor);
 	if (star)
 	{
@@ -492,7 +515,6 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 			if (IsLocallyControlled())
 			{
 				NewMine = GetWorld()->SpawnActor<ABSU_Mine>(MineFactory, GetActorLocation(), FRotator::ZeroRotator);
-
 			}
 			else
 			{
@@ -507,6 +529,13 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 
 			star->SetTarget(this);
 			ConnectedMines.EmplaceAt(0, NewMine);
+
+			if (HasAuthority())
+			{
+				auto* ps = GetPlayerState();
+				if (ps)
+					ps->SetScore(ps->GetScore() + 1);
+			}
 		}
 	}
 
@@ -522,6 +551,11 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 			}
 
 			ConnectedMines.Empty();
+			if (HasAuthority())
+			{
+				auto* ps = GetPlayerState();
+				ps->SetScore(0);
+			}
 		}
 	}
 
