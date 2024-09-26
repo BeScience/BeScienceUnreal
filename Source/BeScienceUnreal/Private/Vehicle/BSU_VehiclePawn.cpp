@@ -23,6 +23,8 @@
 #include "Kyoulee/CPP_KY_GS_GamePlay.h"
 #include "Kyoulee/CPP_KY_GM_GamePlay.h"
 #include "Kismet/GameplayStatics.h"
+#include "BSU_Mine.h"
+#include "Vehicle/BSU_Magnet.h"
 
 ABSU_VehiclePawn::ABSU_VehiclePawn()
 {
@@ -194,7 +196,7 @@ void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(ExitVehicleAction, ETriggerEvent::Triggered, this, &ABSU_VehiclePawn::ExitVehicle);
 
 		// play the game
-		EnhancedInputComponent->BindAction(PlayGameAction, ETriggerEvent::Triggered, this, &ABSU_VehiclePawn::PlayGame);
+		EnhancedInputComponent->BindAction(PlayGameAction, ETriggerEvent::Triggered, this, &ABSU_VehiclePawn::ReadyGame);
 	}
 	else
 	{
@@ -388,24 +390,19 @@ void ABSU_VehiclePawn::ExitVehicle(const FInputActionValue& Value)
 	}
 }
 
-void ABSU_VehiclePawn::PlayGame(const FInputActionValue& Value)
+void ABSU_VehiclePawn::ReadyGame(const FInputActionValue& Value)
 {
 	// 방장일 경우
 	if (HasAuthority())
 	{
-		KartWidget->ShowStartText(false);
-
-		// 서버로 전달.
-		// State 변경
-		// 각 유저 차량 위치 변경
-		KartWidget->ShowPlayGame();
-		ThrottleInput = 0.0f;
-		// 게임스테이트 가져오기
 		if (nullptr == GameState) GameState = GetWorld()->GetGameState<ACPP_KY_GS_GamePlay>();
 		// 게임스테이트에게 게임 시작을 알린다.
-		if (GameState)
+		if (GameState && GameState->GamePlayState == EGamePlayState::EWaiting)
+		{
 			GameState->SetGamePlayState(EGamePlayState::EReady);
+		}
 
+		// 멀티케스팅으로 게임시작을 알린다.
 		// 게임모드를 가져온다.
 		AGameModeBase* gamMode = UGameplayStatics::GetGameMode(GetWorld());
 		ACPP_KY_GM_GamePlay* gm = Cast<ACPP_KY_GM_GamePlay>(gamMode);
@@ -419,29 +416,65 @@ void ABSU_VehiclePawn::StartGame()
 	ThrottleInput = 0.5f;
 	if (HasAuthority())
 	{
-		// 카운트 시작
-		AGameModeBase* gamMode = UGameplayStatics::GetGameMode(GetWorld());
-		ACPP_KY_GM_GamePlay* gm = Cast<ACPP_KY_GM_GamePlay>(gamMode);
-		if (gm)
-			gm->StartGame();
+		if (nullptr == GameState) GameState = GetWorld()->GetGameState<ACPP_KY_GS_GamePlay>();
+		// 게임스테이트에게 게임 시작을 알린다.
+		if (GameState)
+		{
+			// GameState->SetGamePlayState(EGamePlayState::EPlaying);
+
+			AGameModeBase* gamMode = UGameplayStatics::GetGameMode(GetWorld());
+			ACPP_KY_GM_GamePlay* gm = Cast<ACPP_KY_GM_GamePlay>(gamMode);
+			if (gm)
+				gm->StartGameTime();
+		}
 	}
+}
+
+void ABSU_VehiclePawn::ClientReadyGame()
+{
+	KartWidget->ShowStartText(false);
+
+	// State 변경
+	// 각 유저 차량 위치 변경
+	KartWidget->ShowPlayGame();
+	ThrottleInput = 0.0f;
+	// 게임스테이트 가져오기
+	if (nullptr == GameState) GameState = GetWorld()->GetGameState<ACPP_KY_GS_GamePlay>();
 }
 
 void ABSU_VehiclePawn::ResultGame(bool bWin)
 {
-	if (bWin)
+	// 자신의 마인을 모두 제거한다.
+	for (auto& ConnectedMine : ConnectedMines)
 	{
-		KartWidget->ShowWin();
+		ConnectedMine->Destroy();
 	}
-	else
+
+	ConnectedMines.Empty();
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController->IsLocalController() && KartWidget)
 	{
-		KartWidget->ShowLose();
+		if (bWin)
+		{
+			KartWidget->ShowWin();
+		}
+		else
+		{
+			KartWidget->ShowLose();
+		}
 	}
 }
 
 void ABSU_VehiclePawn::SetTimer(int32 GameTime)
 {
-	KartWidget->SetGameTime(GameTime);
+	if (KartWidget)
+		KartWidget->SetGameTime(GameTime);
+}
+
+void ABSU_VehiclePawn::ShrinkBox()
+{
+	BoxComp->SetBoxExtent(OldBoxExtent);
 }
 
 void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -449,25 +482,62 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 	ABSU_Star* star = Cast<ABSU_Star>(OtherActor);
 	if (star)
 	{
-		if (star->bTargeted)
-		{
-			// 차량 폭파시킨다.
-		}
-		else
+		if (!star->bTargeted)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("OnBoxBeginOverlap"));
-			if (ConnectedStars.Num() > 0)
+			
+			// mine생성
+			ABSU_Mine* NewMine;
+			
+			if (IsLocallyControlled())
 			{
-				star->SetTarget(ConnectedStars.Last());
+				NewMine = GetWorld()->SpawnActor<ABSU_Mine>(MineFactory, GetActorLocation(), FRotator::ZeroRotator);
+
 			}
 			else
 			{
-				star->SetTarget(this);
+				NewMine = GetWorld()->SpawnActor<ABSU_Mine>(EnemyMineFactory, GetActorLocation(), FRotator::ZeroRotator);
 			}
 
-			// 가장 마지막 스타를 타겟으로 한다.
-			ConnectedStars.Add(star);
+			NewMine->SetTarget(this, GetController());
+			if (ConnectedMines.Num() > 0)
+			{
+				ConnectedMines[0]->SetTarget(NewMine, GetController());
+			}
+
+			star->SetTarget(this);
+			ConnectedMines.EmplaceAt(0, NewMine);
 		}
+	}
+
+	ABSU_Mine* mine = Cast<ABSU_Mine>(OtherActor);
+	if (mine && mine->GenTime > 1)
+	{
+		if (mine->TargetController != GetController())
+		{
+			// 자신의 마인을 모두 제거한다.
+			for (auto& ConnectedMine : ConnectedMines)
+			{
+				ConnectedMine->Destroy();
+			}
+
+			ConnectedMines.Empty();
+		}
+	}
+
+	ABSU_Magnet* magnet = Cast<ABSU_Magnet>(OtherActor);
+	if (magnet)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Magnet"));
+
+		// 마그넷을 먹었을 때 박스가 커진다.
+		// 이전 박스크기를 저장한다.
+		BoxComp->SetBoxExtent(FVector(700.0f, 700.0f, 200.0f));
+		// 5초후 작아진다.
+
+		magnet->SetTarget(this);
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABSU_VehiclePawn::ShrinkBox, 5.0f, false);
 	}
 }
 

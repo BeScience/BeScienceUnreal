@@ -14,6 +14,9 @@ class BESCIENCEUNREAL_API ACPP_KY_GM_GamePlay : public ACPP_KY_GM_Core
 {
 	GENERATED_BODY()
 
+protected:
+	virtual void BeginPlay() override;
+
 public:
 	// 모든 플레이어를 차량 경주상태로 변경한다.
 	UFUNCTION(BlueprintCallable, Category = "GamePlay")
@@ -21,9 +24,12 @@ public:
 
 	FTimerHandle TimerHandle_UpdateGameTime;
 	int32 GameTime;
-	int32 GameTimeLimit = 80;
-	void StartGame();
+	int32 GameTimeLimit = 5;
+	void StartGameTime();
 
 	void EndGame();
 	void UpdateGameTime();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class ABSU_MineManager* MineManager;
 };

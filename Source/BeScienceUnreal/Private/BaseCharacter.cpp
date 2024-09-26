@@ -122,10 +122,19 @@ void ABaseCharacter::OnMyActionFunction(const FInputActionValue& inputValue)
 	UE_LOG(LogTemp, Warning, TEXT("OnMyActionFunction"));
 	TArray<AActor*> OverlappingActors;
 	GetOverlappingActors(OverlappingActors, TSubclassOf<AActor>());
+
+	bool isRide = false;
 	for (AActor* Actor : OverlappingActors)
 	{
-		ABSU_VehiclePawn* pawn = Cast<ABSU_VehiclePawn>(Actor);
-		RideVehicle(pawn);
+		if (!isRide)
+		{
+			ABSU_VehiclePawn* pawn = Cast<ABSU_VehiclePawn>(Actor);
+			if (pawn)
+			{
+				isRide = true;
+				RideVehicle(pawn);
+			}
+		}
 
 		ABSU_MemoBoard* board = Cast<ABSU_MemoBoard>(Actor);
 		if (board)

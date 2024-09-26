@@ -11,6 +11,17 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "EngineUtils.h"
 #include "Kyoulee/CPP_KY_GS_GamePlay.h"
+#include "Vehicle/BSU_MineManager.h"
+#include "BSU_Mine.h"
+#include "Vehicle/BSU_Magnet.h"
+
+void ACPP_KY_GM_GamePlay::BeginPlay()
+{
+    // World에서 MineManager를 가져온다.
+
+	MineManager = Cast<ABSU_MineManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ABSU_MineManager::StaticClass()));
+
+}
 
 void ACPP_KY_GM_GamePlay::TeleportAllPlayersToSpawn()
 {
@@ -57,13 +68,21 @@ void ACPP_KY_GM_GamePlay::TeleportAllPlayersToSpawn()
             }
         }
     }
+
+    MineManager->SpawnMine();
 }
 
-void ACPP_KY_GM_GamePlay::StartGame()
+void ACPP_KY_GM_GamePlay::StartGameTime()
 {
     GetWorld()->GetTimerManager().SetTimer(TimerHandle_UpdateGameTime, this, &ACPP_KY_GM_GamePlay::UpdateGameTime, 1.0f, true);
 
     GameTime = GameTimeLimit;
+
+    ACPP_KY_GS_GamePlay* GamePlayState = GetGameState<ACPP_KY_GS_GamePlay>();
+    if (GamePlayState)
+    {
+        GamePlayState->UpdateGameElapsedTime(GameTimeLimit);
+    }
 }
 
 void ACPP_KY_GM_GamePlay::EndGame()
@@ -72,11 +91,10 @@ void ACPP_KY_GM_GamePlay::EndGame()
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_UpdateGameTime);
 
     // 모든 플레이어에게 결과창을 띄운다.
-
     ACPP_KY_GS_GamePlay* GamePlayState = GetGameState<ACPP_KY_GS_GamePlay>();
     if (GamePlayState)
     {
-        GamePlayState->MulticastShowResultScreen();
+        GamePlayState->SetGamePlayState(EGamePlayState::EGameOver);
     }
 }
 

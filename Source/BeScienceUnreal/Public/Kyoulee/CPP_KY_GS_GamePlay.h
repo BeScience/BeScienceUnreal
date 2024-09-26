@@ -40,9 +40,12 @@ public:
 
 	void UpdateGameElapsedTime(int32 GameTime);
 
-	
-    UFUNCTION(NetMulticast, Reliable)
-    void MulticastShowResultScreen();
+	UFUNCTION(NetMulticast, Reliable)
+    void MulticastReadyGame();
+	UFUNCTION(NetMulticast, Reliable)
+    void MulticastStartGame();
+	UFUNCTION(NetMulticast, Reliable)
+    void MulticastEndGame();
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
