@@ -41,6 +41,7 @@ void UKartWidget::ShowStartText(bool value)
 	if (StartText)
 	{
 		StartText->SetVisibility(value ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+		PlaySound(StartSound);
 	}
 }
 
