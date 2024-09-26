@@ -418,8 +418,8 @@ void ABSU_VehiclePawn::ReadyGame(const FInputActionValue& Value)
 
 void ABSU_VehiclePawn::StartGame()
 {
-	USkeletalMeshComponent* vehicleMesh = GetMesh();
-	vehicleMesh->SetSimulatePhysics(true);
+	/*USkeletalMeshComponent* vehicleMesh = GetMesh();
+	vehicleMesh->SetSimulatePhysics(true);*/
 
 	ThrottleInput = 0.5f;
 	if (HasAuthority())
