@@ -42,4 +42,8 @@ public:
 	void SetTarget(AActor* NewTargetActor);
 
 	bool bTargeted = false;
+
+	// 파티클 이펙트
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UParticleSystem* GainEffect;
 };

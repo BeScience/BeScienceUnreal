@@ -12,6 +12,7 @@
 #include "MemoBoard/BSU_MemoEditWidget.h"
 #include "MemoBoard/BSU_MemoHttpComponent.h"
 #include "Kyoulee/CPP_KY_PC_GamePlay.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABSU_MemoBoard::ABSU_MemoBoard()
@@ -138,6 +139,7 @@ void ABSU_MemoBoard::NotifyActorOnClicked(FKey ButtonPressed)
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 	if (PC)
 	{
+		UGameplayStatics::PlaySound2D(GetWorld(), sound);
 		FHitResult HitResult;
 		// ECC_Visibility는 해당 라인 트레이스가 감지할 채널을 지정합니다.
 		if (PC->GetHitResultUnderCursor(ECC_Visibility, true, HitResult))

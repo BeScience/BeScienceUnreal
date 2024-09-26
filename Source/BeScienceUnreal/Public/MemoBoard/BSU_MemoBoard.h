@@ -71,4 +71,7 @@ public:
 	class UBSU_MemoEditWidget* EditWidget;
 
 	TArray<ABSU_Memo*> MemoArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundBase* sound;
 };

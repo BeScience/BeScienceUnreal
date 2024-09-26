@@ -42,4 +42,7 @@ public:
 	class UButton* AttachButton;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	class UButton* CancelButton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundBase* sound;
 };

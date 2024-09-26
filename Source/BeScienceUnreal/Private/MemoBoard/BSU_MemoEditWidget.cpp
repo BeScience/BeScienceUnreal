@@ -4,6 +4,7 @@
 #include "MemoBoard/BSU_MemoEditWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
+#include "Kismet/GameplayStatics.h"
 
 void UBSU_MemoEditWidget::NativeConstruct()
 {
@@ -15,6 +16,10 @@ void UBSU_MemoEditWidget::NativeConstruct()
 
 void UBSU_MemoEditWidget::OnAttachMemo()
 {
+	// 사운드 재생
+	
+	UGameplayStatics::PlaySound2D(GetWorld(), sound);
+
 	FString memo = MemoEditTextBox->GetText().ToString();
 	// 위젯 숨김
 	RemoveFromParent();
@@ -24,6 +29,7 @@ void UBSU_MemoEditWidget::OnAttachMemo()
 
 void UBSU_MemoEditWidget::OnCancelMemo()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), sound);
 	// 위젯을 숨김
 	RemoveFromParent();
 }

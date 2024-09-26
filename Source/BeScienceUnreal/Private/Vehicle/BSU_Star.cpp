@@ -4,6 +4,7 @@
 #include "Vehicle/BSU_Star.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABSU_Star::ABSU_Star()
@@ -43,6 +44,12 @@ void ABSU_Star::Tick(float DeltaTime)
 		}
 		else
 		{
+			// 이펙트 생성
+			if (GainEffect)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GainEffect, GetActorLocation());
+			}
+
 			// 타겟에 도달하면 파괴
 			Destroy();
 		}

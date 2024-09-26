@@ -206,4 +206,8 @@ public:
 
 	UFUNCTION()
 	void ShrinkBox();
+
+	// 파티클 이펙트
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UParticleSystem* ExplosionEffect;
 };

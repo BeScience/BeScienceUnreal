@@ -155,7 +155,7 @@ void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			subSys->AddMappingContext(IMC_Player, 1);
 		}
 
-		ThrottleInput = 0.5f;
+		// ThrottleInput = 0.5f;
 		// 위젯 설치
 		if (IsLocallyControlled())
 		{
@@ -497,9 +497,6 @@ void ABSU_VehiclePawn::ShrinkBox()
 
 void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {	
-	// possess가 안된 상태라면 넘긴다.
-	if (GetController() == nullptr) return;
-
 	// 로그 출력
 
 	ABSU_Star* star = Cast<ABSU_Star>(OtherActor);
@@ -530,12 +527,9 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 			star->SetTarget(this);
 			ConnectedMines.EmplaceAt(0, NewMine);
 
-			if (HasAuthority())
-			{
-				auto* ps = GetPlayerState();
-				if (ps)
-					ps->SetScore(ps->GetScore() + 1);
-			}
+			auto* ps = GetPlayerState();
+			if (ps)
+				ps->SetScore(ps->GetScore() + 1);
 		}
 	}
 
@@ -548,6 +542,12 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 			for (auto& ConnectedMine : ConnectedMines)
 			{
 				ConnectedMine->Destroy();
+			}
+
+			// 이펙트 생성
+			if (ExplosionEffect)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 			}
 
 			ConnectedMines.Empty();
@@ -566,7 +566,7 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 
 		// 마그넷을 먹었을 때 박스가 커진다.
 		// 이전 박스크기를 저장한다.
-		BoxComp->SetBoxExtent(FVector(700.0f, 700.0f, 200.0f));
+		BoxComp->SetBoxExtent(FVector(1000.0f, 1000.0f, 200.0f));
 		// 5초후 작아진다.
 
 		magnet->SetTarget(this);
