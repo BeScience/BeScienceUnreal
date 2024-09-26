@@ -21,8 +21,8 @@ public:
 
 	FTimerHandle TimerHandle_UpdateGameTime;
 	int32 GameTime;
-	int32 GameTimeLimit = 80;
-	void StartGame();
+	int32 GameTimeLimit = 5;
+	void StartGameTime();
 
 	void EndGame();
 	void UpdateGameTime();

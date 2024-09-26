@@ -59,7 +59,7 @@ void ACPP_KY_GM_GamePlay::TeleportAllPlayersToSpawn()
     }
 }
 
-void ACPP_KY_GM_GamePlay::StartGame()
+void ACPP_KY_GM_GamePlay::StartGameTime()
 {
     GetWorld()->GetTimerManager().SetTimer(TimerHandle_UpdateGameTime, this, &ACPP_KY_GM_GamePlay::UpdateGameTime, 1.0f, true);
 
@@ -76,7 +76,7 @@ void ACPP_KY_GM_GamePlay::EndGame()
     ACPP_KY_GS_GamePlay* GamePlayState = GetGameState<ACPP_KY_GS_GamePlay>();
     if (GamePlayState)
     {
-        GamePlayState->MulticastShowResultScreen();
+        GamePlayState->SetGamePlayState(EGamePlayState::EGameOver);
     }
 }
 

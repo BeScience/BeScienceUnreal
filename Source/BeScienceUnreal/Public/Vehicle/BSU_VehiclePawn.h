@@ -140,7 +140,7 @@ protected:
 	/** Handles exit vehicle input */
 	void ExitVehicle(const FInputActionValue& Value);
 
-	void PlayGame(const FInputActionValue& Value);
+	void ReadyGame(const FInputActionValue& Value);
 
 	/** Called when the brake lights are turned on or off */
 	UFUNCTION(BlueprintImplementableEvent, Category="Vehicle")
@@ -171,8 +171,13 @@ public:
 	 */
 	UFUNCTION()
 	void OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	TArray<class ABSU_Star*> ConnectedStars;
+	
+	UPROPERTY()
+	TArray<class ABSU_Mine*> ConnectedMines;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<class ABSU_Mine> MineFactory;
+	UPROPERTY()
+	class ABSU_Mine* Mine;
 
 	// 위젯
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -185,9 +190,18 @@ public:
 	class ACPP_KY_GS_GamePlay* GameState;
 	void PrintNetLog();
 	void StartGame();
+
+	void ClientReadyGame();
+
 	void ResultGame(bool bWin);
 
 	void SetTimer(int32 GameTime);
 
 	float ThrottleInput = 0.5f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FVector OldBoxExtent;
+
+	UFUNCTION()
+	void ShrinkBox();
 };
