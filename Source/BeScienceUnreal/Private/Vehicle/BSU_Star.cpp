@@ -32,7 +32,7 @@ void ABSU_Star::Tick(float DeltaTime)
 	if (TargetActor)
 	{
 		// 타겟과의 거리
-		if (FVector::Dist(TargetActor->GetActorLocation(), GetActorLocation()) > 200)
+		if (FVector::Dist(TargetActor->GetActorLocation(), GetActorLocation()) > 50)
 		{
 			FVector TargetLoc = TargetActor->GetActorLocation();
 			FVector dir = TargetLoc - GetActorLocation();
@@ -40,6 +40,11 @@ void ABSU_Star::Tick(float DeltaTime)
 			FVector p0 = GetActorLocation();
 			FVector p =  p0 + Speed * dir * DeltaTime;
 			SetActorLocation(p);
+		}
+		else
+		{
+			// 타겟에 도달하면 파괴
+			Destroy();
 		}
 	}
 }
