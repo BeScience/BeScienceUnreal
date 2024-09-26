@@ -36,7 +36,7 @@ public:
 	AActor* TargetActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float Speed = 2000;
+	float Speed = 3000;
 
 public:
 	void SetTarget(AActor* NewTargetActor);

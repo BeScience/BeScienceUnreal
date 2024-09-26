@@ -32,7 +32,7 @@ void ABSU_Star::Tick(float DeltaTime)
 	if (TargetActor)
 	{
 		// 타겟과의 거리
-		if (FVector::Dist(TargetActor->GetActorLocation(), GetActorLocation()) > 50)
+		if (FVector::Dist(TargetActor->GetActorLocation(), GetActorLocation()) > 80)
 		{
 			FVector TargetLoc = TargetActor->GetActorLocation();
 			FVector dir = TargetLoc - GetActorLocation();
