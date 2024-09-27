@@ -46,4 +46,7 @@ public:
 	// 파티클 이펙트
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UParticleSystem* GainEffect;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USoundBase* sound;
 };

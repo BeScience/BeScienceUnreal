@@ -220,5 +220,8 @@ public:
 	class UParticleSystem* ExplosionEffect;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USoundBase* sound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsRiding = false;
 };

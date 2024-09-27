@@ -596,6 +596,11 @@ void ABSU_VehiclePawn::OnMyCollisionBoxBeginOverlap(UPrimitiveComponent* Overlap
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 			}
 
+			if (sound)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), sound);
+			}
+
 			ConnectedMines.Empty();
 			if (HasAuthority())
 			{

@@ -47,7 +47,13 @@ void ABSU_Star::Tick(float DeltaTime)
 			// 이펙트 생성
 			if (GainEffect)
 			{
+
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GainEffect, GetActorLocation());
+			}
+
+			if (sound)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), sound);
 			}
 
 			// 타겟에 도달하면 파괴
