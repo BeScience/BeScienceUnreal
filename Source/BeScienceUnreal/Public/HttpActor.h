@@ -54,8 +54,9 @@ public:
 		UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TArray<UTexture2D*> Icons;
 
-
-	FString URL = TEXT("http://59.13.225.125:8888/stt-tts-chat");
+	
+	FString URL = TEXT("http://metaai2.iptime.org:8181/stt-tts-chat");
+	//FString URL = TEXT("http://59.13.225.125:8888/stt-tts-chat");
 // 	FString URL = TEXT("http://183.109.66.119:8000/stt-tts-chat");
 	FString Key = TEXT("/");
 
