@@ -58,6 +58,10 @@ ABSU_VehiclePawn::ABSU_VehiclePawn()
 	BoxComp->SetupAttachment(GetMesh());
 	BoxComp->SetBoxExtent(FVector(300.0f, 200.0f, 100.0f));
 
+	CollisionBoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBoxComp"));
+	CollisionBoxComp->SetupAttachment(GetMesh());
+	CollisionBoxComp->SetBoxExtent(FVector(100.0f, 100.0f, 100.0f));
+
 	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComp"));
 	ArrowComp->SetupAttachment(GetMesh());
 	// (X=40.000000,Y=-170.000000,Z=60.000000)
@@ -136,6 +140,7 @@ void ABSU_VehiclePawn::BeginPlay()
 {
 	Super::BeginPlay();
 	BoxComp->OnComponentBeginOverlap.AddDynamic(this, &ABSU_VehiclePawn::OnMyBoxBeginOverlap);
+	CollisionBoxComp->OnComponentBeginOverlap.AddDynamic(this, &ABSU_VehiclePawn::OnMyCollisionBoxBeginOverlap);
 }
 
 void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -497,7 +502,14 @@ void ABSU_VehiclePawn::ShrinkBox()
 
 void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {	
-	// 로그 출력
+	// 컨트롤러가 없다면 무시
+	if (! IsRiding)
+		return;
+
+	// Game State를 가져온다.
+	if (nullptr == GameState) GameState = GetWorld()->GetGameState<ACPP_KY_GS_GamePlay>();
+	if (GameState && GameState->GamePlayState != EGamePlayState::EPlaying)
+		return;
 
 	ABSU_Star* star = Cast<ABSU_Star>(OtherActor);
 	if (star)
@@ -521,6 +533,10 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 			NewMine->SetTarget(this, GetController());
 			if (ConnectedMines.Num() > 0)
 			{
+				if (ConnectedMines[0] == nullptr)
+				{
+					int a = 0;
+				}
 				ConnectedMines[0]->SetTarget(NewMine, GetController());
 			}
 
@@ -532,6 +548,36 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 				ps->SetScore(ps->GetScore() + 1);
 		}
 	}
+
+	//if (OtherActor != nullptr && OtherActor->IsA(ABSU_Magnet::StaticClass()))
+	{
+		ABSU_Magnet* magnet = Cast<ABSU_Magnet>(OtherActor);
+		if (magnet)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Magnet"));
+
+			// 마그넷을 먹었을 때 박스가 커진다.
+			// 이전 박스크기를 저장한다.
+			BoxComp->SetBoxExtent(FVector(1000.0f, 1000.0f, 200.0f));
+			// 5초후 작아진다.
+
+			magnet->SetTarget(this);
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABSU_VehiclePawn::ShrinkBox, 5.0f, false);
+		}
+	}
+}
+
+void ABSU_VehiclePawn::OnMyCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// 컨트롤러가 없다면 무시
+	if (!IsRiding)
+		return;
+
+	// Game State를 가져온다.
+	if (nullptr == GameState) GameState = GetWorld()->GetGameState<ACPP_KY_GS_GamePlay>();
+	if (GameState && GameState->GamePlayState != EGamePlayState::EPlaying)
+		return;
 
 	ABSU_Mine* mine = Cast<ABSU_Mine>(OtherActor);
 	if (mine && mine->GenTime > 1)
@@ -557,21 +603,6 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 				ps->SetScore(0);
 			}
 		}
-	}
-
-	ABSU_Magnet* magnet = Cast<ABSU_Magnet>(OtherActor);
-	if (magnet)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Magnet"));
-
-		// 마그넷을 먹었을 때 박스가 커진다.
-		// 이전 박스크기를 저장한다.
-		BoxComp->SetBoxExtent(FVector(1000.0f, 1000.0f, 200.0f));
-		// 5초후 작아진다.
-
-		magnet->SetTarget(this);
-		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABSU_VehiclePawn::ShrinkBox, 5.0f, false);
 	}
 }
 

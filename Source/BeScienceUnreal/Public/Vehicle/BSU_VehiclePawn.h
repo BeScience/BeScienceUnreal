@@ -50,6 +50,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	class UBoxComponent* BoxComp;
 
+	// box collision
+	UPROPERTY(EditDefaultsOnly)
+	class UBoxComponent* CollisionBoxComp;
+
 	UPROPERTY(EditDefaultsOnly)
 	class UArrowComponent* ArrowComp;
 
@@ -171,7 +175,11 @@ public:
 	 */
 	UFUNCTION()
 	void OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnMyCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
+	
+
 	UPROPERTY()
 	TArray<class ABSU_Mine*> ConnectedMines;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -210,4 +218,7 @@ public:
 	// 파티클 이펙트
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UParticleSystem* ExplosionEffect;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsRiding = false;
 };

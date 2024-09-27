@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 #include "UI/QuestWidget.h"
 #include "BaseCharacter.h"
+#include "Vehicle/BSU_VehiclePawn.h"
 
 void ACPP_KY_PC_GamePlay::BeginPlay ()
 {
