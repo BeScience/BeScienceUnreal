@@ -49,4 +49,5 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class USoundBase* sound;
+	
 };

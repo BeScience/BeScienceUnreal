@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
+#include "Components/TimelineComponent.h"
 #include "BSU_VehiclePawn.generated.h"
 
 class UCameraComponent;
@@ -224,4 +225,16 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsRiding = false;
+
+	UPROPERTY()
+	class UMaterialInstanceDynamic* Mat;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UCurveFloat* MagnetCurve;
+
+	UPROPERTY()
+	FTimeline MagnetTimeline;
+	
+	UFUNCTION()
+	void HandleProgress(float Value);
 };

@@ -141,6 +141,20 @@ void ABSU_VehiclePawn::BeginPlay()
 	Super::BeginPlay();
 	BoxComp->OnComponentBeginOverlap.AddDynamic(this, &ABSU_VehiclePawn::OnMyBoxBeginOverlap);
 	CollisionBoxComp->OnComponentBeginOverlap.AddDynamic(this, &ABSU_VehiclePawn::OnMyCollisionBoxBeginOverlap);
+
+	if (MagnetCurve)
+	{
+		FOnTimelineFloat ProgressFunction;
+		ProgressFunction.BindUFunction(this, FName("HandleProgress"));
+
+		MagnetTimeline.AddInterpFloat(MagnetCurve, ProgressFunction);
+
+		MagnetTimeline.SetLooping(false);
+	}
+
+
+	Mat = GetMesh()->CreateDynamicMaterialInstance(0);
+	Mat->SetScalarParameterValue(TEXT("FresnelPercent"), 0);
 }
 
 void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -216,6 +230,11 @@ void ABSU_VehiclePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void ABSU_VehiclePawn::Tick(float Delta)
 {
 	Super::Tick(Delta);
+
+	if (MagnetTimeline.IsPlaying())
+	{
+		MagnetTimeline.TickTimeline(Delta);
+	}
 
 	// add some angular damping if the vehicle is in midair
 	bool bMovingOnGround = ChaosVehicleMovement->IsMovingOnGround();
@@ -500,6 +519,11 @@ void ABSU_VehiclePawn::ShrinkBox()
 	BoxComp->SetBoxExtent(OldBoxExtent);
 }
 
+void ABSU_VehiclePawn::HandleProgress(float Value)
+{
+	Mat->SetScalarParameterValue(TEXT("FresnelPercent"), Value);
+}
+
 void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {	
 	// 컨트롤러가 없다면 무시
@@ -561,6 +585,7 @@ void ABSU_VehiclePawn::OnMyBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 			BoxComp->SetBoxExtent(FVector(1000.0f, 1000.0f, 200.0f));
 			// 5초후 작아진다.
 
+			MagnetTimeline.PlayFromStart();
 			magnet->SetTarget(this);
 			FTimerHandle TimerHandle;
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABSU_VehiclePawn::ShrinkBox, 5.0f, false);
